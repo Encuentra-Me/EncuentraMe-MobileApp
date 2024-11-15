@@ -1,5 +1,6 @@
 import 'package:encuentrame_app/models/report.dart';
 import 'package:encuentrame_app/utils/db_helper_report.dart';
+import 'package:encuentrame_app/UI/reports_list.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
@@ -150,8 +151,10 @@ class AddReportProcess {
     print("Número de elementos url: $url");
 
     Navigator.of(context).pop(); // Cerrar pop-up 3
-    Navigator.of(context)
-        .popUntil((route) => route.isFirst); // Regresar a inicio
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ReportListPage())); // Regresar a inicio
   }
 
   // Función para obtener datos del URL
