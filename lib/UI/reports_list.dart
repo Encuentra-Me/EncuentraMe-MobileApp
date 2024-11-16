@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:encuentrame_app/utils/db_helper_report.dart';
 import 'package:encuentrame_app/models/report.dart';
 import 'package:encuentrame_app/UI/reports_details.dart';
 import 'package:encuentrame_app/UI/popups.dart';
 import 'package:encuentrame_app/UI/popup_share_v1.dart';
+import 'package:encuentrame_app/UI/notification.dart';
+import 'package:flutter/material.dart';
 
 class ReportListPage extends StatefulWidget {
   const ReportListPage({super.key});
@@ -232,7 +233,12 @@ class _ReportListPage extends State<ReportListPage> {
                     IconButton(
                       icon: const Icon(Icons.notifications),
                       iconSize: 40.0,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NotificationsPage()));
+                      },
                     ),
                     //const Text("Notificación"),
                   ],
