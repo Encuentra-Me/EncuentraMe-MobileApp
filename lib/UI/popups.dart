@@ -21,50 +21,107 @@ class AddReportProcess {
   // Pop-up 1: Validación del URL
   void _showPopup1() {
     TextEditingController urlController = TextEditingController();
+    bool isLoading = false;
+    String? errorMessage;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text("NOTA DE ALERTA"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Agregue el URL oficial"),
-              TextField(
-                controller: urlController,
-                decoration: InputDecoration(
-                  hintText:
-                      "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/...",
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text("NOTA DE ALERTA"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Agregue el URL oficial"),
+                  TextField(
+                    controller: urlController,
+                    decoration: InputDecoration(
+                      hintText:
+                          "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/...",
+                      hintStyle: TextStyle(color: Colors.grey),
+                      suffixIcon: isLoading 
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+                  if (errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        errorMessage!,
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                  Text(
+                    "*Nota: El URL debe ser de la página oficial del RENIPED, de lo contrario, no se validará.",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-              ),
-              Text(
-                "*Nota: El URL debe ser de la página oficial del RENIPED, de lo contrario, no se validará.",
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            IconButton(
-              icon: Icon(Icons.arrow_forward),
-              onPressed: () {
-                // Validar URL
-                if (urlController.text.startsWith(
-                    "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/")) {
-                  url = urlController.text;
-                  Navigator.of(context).pop(); // Cerrar pop-up 1
-                  _showPopup2(); // Ir al pop-up 2
-                } else {
-                  Navigator.of(context).pop();
-                  _showPopup4(); // Mostrar error de URL incorrecta
-                }
-              },
-            ),
-          ],
+                IconButton(
+                  icon: Icon(Icons.arrow_forward),
+                  onPressed: isLoading 
+                      ? null 
+                      : () async {
+                          // Validar formato de URL
+                          if (urlController.text.startsWith(
+                              "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/")) {
+                            
+                            // Mostrar indicador de carga
+                            setState(() {
+                              isLoading = true;
+                              errorMessage = null;
+                            });
+                            
+                            try {
+                              // Verificar si la URL está activa
+                              final response = await http.get(Uri.parse(urlController.text));
+                              
+                              print("============================ ${response.statusCode}");
+                              if (response.statusCode == 200) {
+                                // La URL es válida y está activa
+                                url = urlController.text;
+                                if (context.mounted) Navigator.of(context).pop(); // Cerrar pop-up 1
+                                _showPopup2(); // Ir al pop-up 2
+                              } else {
+                                // La URL no está activa
+                                setState(() {
+                                  isLoading = false;
+                                  errorMessage = "El enlace no está activo. Por favor, verifique el URL e intente nuevamente.";
+                                });
+                              }
+                            } catch (e) {
+                              print("============================ $e");
+                              // Error al verificar la URL
+                              setState(() {
+                                isLoading = false;
+                                errorMessage = "Error al verificar el enlace. Por favor, intente nuevamente.";
+                              });
+                            }
+                          } else {
+                            // Formato de URL incorrecto
+                            setState(() {
+                              errorMessage = "El formato del URL no es válido. Debe comenzar con 'https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/'";
+                            });
+                          }
+                        },
+                ),
+              ],
+            );
+          }
         );
       },
     );
@@ -164,115 +221,101 @@ class AddReportProcess {
       if (response.statusCode == 200) {
         // Parsear el contenido HTML
         html_dom.Document document = html_parser.parse(response.body);
-
-        // Buscar el contenedor principal con clase `detalle-desaparecidos-p1`
-        //html_dom.Element? container = document.querySelector('p.detalle-desaparecidos-p1');
-
+        
+        // Imprimir el HTML para depuración (comentado para producción)
+        // print("HTML recibido: ${response.body}");
+        
         // Buscar todos los elementos <p> con la clase `detalle-desaparecidos-p1`
         List<html_dom.Element> pElements =
             document.querySelectorAll('p.detalle-desaparecidos-p1');
-
+            
+        print("Número de elementos p encontrados: ${pElements.length}");
+        
         // Verificar que haya al menos dos elementos <p> y obtener el segundo
         if (pElements.length > 1) {
-          html_dom.Element secondPElement =
-              pElements[1]; // El segundo elemento <p>
-
+          html_dom.Element secondPElement = pElements[1]; // El segundo elemento <p>
+          
           // Obtener todos los elementos <b> dentro del segundo <p>
-          List<html_dom.Element> bElements =
-              secondPElement.querySelectorAll('b');
-
-          // Asegurarse de que haya suficientes elementos para acceder a las posiciones necesarias
-          String? name = bElements.length > 3 ? bElements[3].text.trim() : null;
-          String? lastName =
-              bElements.length > 1 ? bElements[1].text.trim() : null;
-          String? ageText =
-              bElements.length > 5 ? bElements[5].text.trim() : null;
-          String? bornCountry =
-              bElements.length > 9 ? bElements[9].text.trim() : null;
-          String? lastSeen =
-              bElements.length > 11 ? bElements[11].text.trim() : null;
-          String? placeLastSeen =
-              bElements.length > 13 ? bElements[13].text.trim() : null;
-
-          // Convertir la edad a un número si está en formato de texto
-          //int age = int.tryParse(ageText ?? '0') ?? 0;
-
-          // Imprimir la longitud de bElements para verificar cuántos elementos hay
-          print("Número de elementos <b>: ${bElements.length}");
-
-          // Imprimir los datos para ver si esta bien la info
-          print("nombre: $name");
-          print("apellido: $lastName");
-          print("edad: $ageText");
-          print("ciudad: $bornCountry");
-          print("ultima ves visto: $lastSeen");
-          print("ultimo lugar visto: $placeLastSeen");
-          print("Número de elementos url: $url");
-
-          // Verificar que todos los campos esenciales estén presentes
-          if (name != null) {
+          List<html_dom.Element> bElements = secondPElement.querySelectorAll('b');
+          
+          print("Número de elementos <b> encontrados: ${bElements.length}");
+          
+          // Imprimir todos los elementos <b> para depuración
+          for (int i = 0; i < bElements.length; i++) {
+            print("Elemento <b> $i: ${bElements[i].text.trim()}");
+          }
+          
+          // Extraer datos con índices más flexibles
+          Map<String, String> extractedData = {};
+          
+          // Buscar patrones específicos en el texto
+          for (int i = 0; i < bElements.length; i++) {
+            String text = bElements[i].text.trim();
+            
+            // Buscar patrones para cada campo
+            if (text.contains("NOMBRES:")) {
+              extractedData["name"] = text.replaceAll("NOMBRES:", "").trim();
+            } else if (text.contains("APELLIDOS:")) {
+              extractedData["lastName"] = text.replaceAll("APELLIDOS:", "").trim();
+            } else if (text.contains("EDAD:")) {
+              extractedData["age"] = text.replaceAll("EDAD:", "").trim();
+            } else if (text.contains("LUGAR DE NACIMIENTO:")) {
+              extractedData["bornCountry"] = text.replaceAll("LUGAR DE NACIMIENTO:", "").trim();
+            } else if (text.contains("FECHA DE DESAPARICIÓN:")) {
+              extractedData["lastSeen"] = text.replaceAll("FECHA DE DESAPARICIÓN:", "").trim();
+            } else if (text.contains("LUGAR DE DESAPARICIÓN:")) {
+              extractedData["placeLastSeen"] = text.replaceAll("LUGAR DE DESAPARICIÓN:", "").trim();
+            }
+          }
+          
+          // Si no se encontraron datos con los patrones, intentar con índices fijos
+          if (extractedData.isEmpty && bElements.length >= 14) {
+            extractedData = {
+              "name": bElements.length > 3 ? bElements[3].text.trim() : "",
+              "lastName": bElements.length > 1 ? bElements[1].text.trim() : "",
+              "age": bElements.length > 5 ? bElements[5].text.trim() : "",
+              "bornCountry": bElements.length > 9 ? bElements[9].text.trim() : "",
+              "lastSeen": bElements.length > 11 ? bElements[11].text.trim() : "",
+              "placeLastSeen": bElements.length > 13 ? bElements[13].text.trim() : "",
+            };
+          }
+          
+          // Imprimir los datos extraídos
+          print("Datos extraídos: $extractedData");
+          
+          // Verificar que al menos el nombre esté presente
+          if (extractedData["name"] != null && extractedData["name"]!.isNotEmpty) {
             return ReportMP(
-                name: name,
-                lastName: lastName ?? "",
-                status: "Desaparecido",
-                age: ageText ?? "",
-                bornCountry: bornCountry ?? "",
-                lastSeen: lastSeen ?? "",
-                placeLastSeen: placeLastSeen ?? "",
-                url: url);
+              name: extractedData["name"] ?? "",
+              lastName: extractedData["lastName"] ?? "",
+              status: "Desaparecido",
+              age: extractedData["age"] ?? "",
+              bornCountry: extractedData["bornCountry"] ?? "",
+              lastSeen: extractedData["lastSeen"] ?? "",
+              placeLastSeen: extractedData["placeLastSeen"] ?? "",
+              url: url
+            );
           } else {
-            print("Datos incompletos en el HTML");
+            print("No se pudo extraer el nombre del reporte");
             return null;
           }
         } else {
-          print("Contenedor no encontrado: ${response.statusCode}");
+          print("No se encontraron suficientes elementos <p> con la clase detalle-desaparecidos-p1");
           return null;
         }
       } else {
-        print("Error en la respuesta: ${response.statusCode}");
+        print("Error en la respuesta HTTP: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("Error en la solicitud: $e");
+      print("Error al procesar la URL: $e");
       return null;
     }
-
-    // Guardar en la base de datos
-    //await _dbHelper.add(newItem.name, "Descripción de ejemplo");
-
-    //Navigator.of(context).pop(); // Cerrar pop-up 3
-    //Navigator.of(context).popUntil((route) => route.isFirst); // Regresar a inicio*/
   }
 
   // Función auxiliar para extraer texto de un selector en HTML
   String? _extractTextFromHtml(html_dom.Document document, String selector) {
     html_dom.Element? element = document.querySelector(selector);
     return element?.text.trim();
-  }
-
-  // Pop-up 4: URL incorrecta
-  void _showPopup4() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("NO SE PUDO REGISTRAR"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error, size: 48, color: Colors.red),
-              SizedBox(height: 16),
-              Text("No se pudo registrar. Por favor, inténtelo nuevamente."),
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

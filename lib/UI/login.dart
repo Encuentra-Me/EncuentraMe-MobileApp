@@ -1,10 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:encuentrame_app/UI/reports_list.dart';
 import 'package:encuentrame_app/UI/signup_1.dart';
+import 'package:encuentrame_app/services/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+
+  Future<void> _handleLogin() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor complete todos los campos')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await _authService.login(
+        emailController.text,
+        passwordController.text,
+      );
+
+      // If login is successful, navigate to the reports list page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ReportListPage()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al iniciar sesión: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +70,7 @@ class LoginPage extends StatelessWidget {
             TextField(
               controller: emailController,
               decoration: InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
             ),
             TextField(
               controller: passwordController,
@@ -36,18 +79,20 @@ class LoginPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             GestureDetector(
-              onTap: () {
-                // Lógica para iniciar sesión y navegar a la página principal
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ReportListPage()));
-              },
+              onTap: _isLoading ? null : _handleLogin,
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12),
                 width: double.infinity,
-                color: Colors.green,
-                child: Text('Iniciar Sesión',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white)),
+                color: _isLoading ? Colors.grey : Colors.green,
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text('Iniciar Sesión',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white)),
               ),
             ),
             SizedBox(height: 10),

@@ -1,6 +1,7 @@
 import 'package:encuentrame_app/UI/reports_list.dart';
 import 'package:encuentrame_app/UI/login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   /*WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      // Add localization support
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('es', 'ES'), // Spanish
+        Locale('en', 'US'), // English
+      ],
       //home: ReportListPage(),
       home: LoginPage(),
     );
