@@ -27,102 +27,105 @@ class AddReportProcess {
     showDialog(
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text("NOTA DE ALERTA"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("Agregue el URL oficial"),
-                  TextField(
-                    controller: urlController,
-                    decoration: InputDecoration(
-                      hintText:
-                          "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/...",
-                      hintStyle: TextStyle(color: Colors.grey),
-                      suffixIcon: isLoading 
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : null,
-                    ),
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text("NOTA DE ALERTA"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Agregue el URL oficial"),
+                TextField(
+                  controller: urlController,
+                  decoration: InputDecoration(
+                    hintText:
+                        "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/...",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    suffixIcon: isLoading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : null,
                   ),
-                  if (errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        errorMessage!,
-                        style: TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ),
-                  Text(
-                    "*Nota: El URL debe ser de la página oficial del RENIPED, de lo contrario, no se validará.",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              ),
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
                 ),
-                IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: isLoading 
-                      ? null 
-                      : () async {
-                          // Validar formato de URL
-                          if (urlController.text.startsWith(
-                              "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/")) {
-                            
-                            // Mostrar indicador de carga
-                            setState(() {
-                              isLoading = true;
-                              errorMessage = null;
-                            });
-                            
-                            try {
-                              // Verificar si la URL está activa
-                              final response = await http.get(Uri.parse(urlController.text));
-                              
-                              print("============================ ${response.statusCode}");
-                              if (response.statusCode == 200) {
-                                // La URL es válida y está activa
-                                url = urlController.text;
-                                if (context.mounted) Navigator.of(context).pop(); // Cerrar pop-up 1
-                                _showPopup2(); // Ir al pop-up 2
-                              } else {
-                                // La URL no está activa
-                                setState(() {
-                                  isLoading = false;
-                                  errorMessage = "El enlace no está activo. Por favor, verifique el URL e intente nuevamente.";
-                                });
-                              }
-                            } catch (e) {
-                              print("============================ $e");
-                              // Error al verificar la URL
-                              setState(() {
-                                isLoading = false;
-                                errorMessage = "Error al verificar el enlace. Por favor, intente nuevamente.";
-                              });
-                            }
-                          } else {
-                            // Formato de URL incorrecto
-                            setState(() {
-                              errorMessage = "El formato del URL no es válido. Debe comenzar con 'https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/'";
-                            });
-                          }
-                        },
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                Text(
+                  "*Nota: El URL debe ser de la página oficial del RENIPED, de lo contrario, no se validará.",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
-            );
-          }
-        );
+            ),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_forward),
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        // Validar formato de URL
+                        if (urlController.text.startsWith(
+                            "https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/")) {
+                          // Mostrar indicador de carga
+                          setState(() {
+                            isLoading = true;
+                            errorMessage = null;
+                          });
+
+                          try {
+                            // Verificar si la URL está activa
+                            final response =
+                                await http.get(Uri.parse(urlController.text));
+
+                            print(
+                                "============================ ${response.statusCode}");
+                            if (response.statusCode == 200) {
+                              // La URL es válida y está activa
+                              url = urlController.text;
+                              if (context.mounted)
+                                Navigator.of(context).pop(); // Cerrar pop-up 1
+                              _showPopup2(); // Ir al pop-up 2
+                            } else {
+                              // La URL no está activa
+                              setState(() {
+                                isLoading = false;
+                                errorMessage =
+                                    "El enlace no está activo. Por favor, verifique el URL e intente nuevamente.";
+                              });
+                            }
+                          } catch (e) {
+                            print("============================ $e");
+                            // Error al verificar la URL
+                            setState(() {
+                              isLoading = false;
+                              errorMessage =
+                                  "Error al verificar el enlace. Por favor, intente nuevamente.";
+                            });
+                          }
+                        } else {
+                          // Formato de URL incorrecto
+                          setState(() {
+                            errorMessage =
+                                "El formato del URL no es válido. Debe comenzar con 'https://desaparecidosenperu.policia.gob.pe/Desaparecidos/nota_alerta_menor/'";
+                          });
+                        }
+                      },
+              ),
+            ],
+          );
+        });
       },
     );
   }
@@ -192,7 +195,7 @@ class AddReportProcess {
       final itemData = await fetchDataFromUrl(url!);
       if (itemData != null) {
         // Guardar en la base de datos
-        await _dbHelper.addReport(
+        /*await _dbHelper.addReport(
             itemData.name,
             itemData.lastName,
             itemData.status,
@@ -200,7 +203,8 @@ class AddReportProcess {
             itemData.bornCountry,
             itemData.lastSeen,
             itemData.placeLastSeen,
-            itemData.url);
+            itemData.alertNoteUrl
+            );*/
       }
     } catch (e) {
       print("Error al obtener datos: $e");
@@ -221,86 +225,96 @@ class AddReportProcess {
       if (response.statusCode == 200) {
         // Parsear el contenido HTML
         html_dom.Document document = html_parser.parse(response.body);
-        
+
         // Imprimir el HTML para depuración (comentado para producción)
         // print("HTML recibido: ${response.body}");
-        
+
         // Buscar todos los elementos <p> con la clase `detalle-desaparecidos-p1`
         List<html_dom.Element> pElements =
             document.querySelectorAll('p.detalle-desaparecidos-p1');
-            
+
         print("Número de elementos p encontrados: ${pElements.length}");
-        
+
         // Verificar que haya al menos dos elementos <p> y obtener el segundo
         if (pElements.length > 1) {
-          html_dom.Element secondPElement = pElements[1]; // El segundo elemento <p>
-          
+          html_dom.Element secondPElement =
+              pElements[1]; // El segundo elemento <p>
+
           // Obtener todos los elementos <b> dentro del segundo <p>
-          List<html_dom.Element> bElements = secondPElement.querySelectorAll('b');
-          
+          List<html_dom.Element> bElements =
+              secondPElement.querySelectorAll('b');
+
           print("Número de elementos <b> encontrados: ${bElements.length}");
-          
+
           // Imprimir todos los elementos <b> para depuración
           for (int i = 0; i < bElements.length; i++) {
             print("Elemento <b> $i: ${bElements[i].text.trim()}");
           }
-          
+
           // Extraer datos con índices más flexibles
           Map<String, String> extractedData = {};
-          
+
           // Buscar patrones específicos en el texto
           for (int i = 0; i < bElements.length; i++) {
             String text = bElements[i].text.trim();
-            
+
             // Buscar patrones para cada campo
             if (text.contains("NOMBRES:")) {
               extractedData["name"] = text.replaceAll("NOMBRES:", "").trim();
             } else if (text.contains("APELLIDOS:")) {
-              extractedData["lastName"] = text.replaceAll("APELLIDOS:", "").trim();
+              extractedData["lastName"] =
+                  text.replaceAll("APELLIDOS:", "").trim();
             } else if (text.contains("EDAD:")) {
               extractedData["age"] = text.replaceAll("EDAD:", "").trim();
             } else if (text.contains("LUGAR DE NACIMIENTO:")) {
-              extractedData["bornCountry"] = text.replaceAll("LUGAR DE NACIMIENTO:", "").trim();
+              extractedData["bornCountry"] =
+                  text.replaceAll("LUGAR DE NACIMIENTO:", "").trim();
             } else if (text.contains("FECHA DE DESAPARICIÓN:")) {
-              extractedData["lastSeen"] = text.replaceAll("FECHA DE DESAPARICIÓN:", "").trim();
+              extractedData["lastSeen"] =
+                  text.replaceAll("FECHA DE DESAPARICIÓN:", "").trim();
             } else if (text.contains("LUGAR DE DESAPARICIÓN:")) {
-              extractedData["placeLastSeen"] = text.replaceAll("LUGAR DE DESAPARICIÓN:", "").trim();
+              extractedData["placeLastSeen"] =
+                  text.replaceAll("LUGAR DE DESAPARICIÓN:", "").trim();
             }
           }
-          
+
           // Si no se encontraron datos con los patrones, intentar con índices fijos
           if (extractedData.isEmpty && bElements.length >= 14) {
             extractedData = {
               "name": bElements.length > 3 ? bElements[3].text.trim() : "",
               "lastName": bElements.length > 1 ? bElements[1].text.trim() : "",
               "age": bElements.length > 5 ? bElements[5].text.trim() : "",
-              "bornCountry": bElements.length > 9 ? bElements[9].text.trim() : "",
-              "lastSeen": bElements.length > 11 ? bElements[11].text.trim() : "",
-              "placeLastSeen": bElements.length > 13 ? bElements[13].text.trim() : "",
+              "bornCountry":
+                  bElements.length > 9 ? bElements[9].text.trim() : "",
+              "lastSeen":
+                  bElements.length > 11 ? bElements[11].text.trim() : "",
+              "placeLastSeen":
+                  bElements.length > 13 ? bElements[13].text.trim() : "",
             };
           }
-          
+
           // Imprimir los datos extraídos
           print("Datos extraídos: $extractedData");
-          
+
           // Verificar que al menos el nombre esté presente
-          if (extractedData["name"] != null && extractedData["name"]!.isNotEmpty) {
+          if (extractedData["name"] != null &&
+              extractedData["name"]!.isNotEmpty) {
             return ReportMP(
-              name: extractedData["name"] ?? "",
-              lastName: extractedData["lastName"] ?? "",
-              status: "Desaparecido",
-              age: extractedData["age"] ?? "",
-              bornCountry: extractedData["bornCountry"] ?? "",
-              lastSeen: extractedData["lastSeen"] ?? "",
-              placeLastSeen: extractedData["placeLastSeen"] ?? "",
-              url: url
-            );
+                name: extractedData["name"] ?? "",
+                lastName: extractedData["lastName"] ?? "",
+                status: "Desaparecido",
+                age: extractedData["age"] ?? "",
+                bornCountry: extractedData["bornCountry"] ?? "",
+                lastSeen: extractedData["lastSeen"] ?? "",
+                placeLastSeen: extractedData["placeLastSeen"] ?? "",
+                alertNoteUrl: url);
           } else {
             print("No se pudo extraer el nombre del reporte");
             return null;
           }
         } else {
-          print("No se encontraron suficientes elementos <p> con la clase detalle-desaparecidos-p1");
+          print(
+              "No se encontraron suficientes elementos <p> con la clase detalle-desaparecidos-p1");
           return null;
         }
       } else {

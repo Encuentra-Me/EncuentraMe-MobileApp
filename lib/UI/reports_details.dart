@@ -1,6 +1,7 @@
 import 'package:encuentrame_app/models/report.dart';
 import 'package:encuentrame_app/UI/popups.dart';
 import 'package:flutter/material.dart';
+import 'package:encuentrame_app/utils/app_bar.dart';
 
 class ReportDetailPage extends StatelessWidget {
   final ReportMP reportMP;
@@ -18,12 +19,12 @@ class ReportDetailPage extends StatelessWidget {
     print("ciudad: ${reportMP.bornCountry}");
     print("ultima ves visto: ${reportMP.lastSeen}");
     print("ultimo lugar visto: ${reportMP.placeLastSeen}");
-    print("Número de elementos url: ${reportMP.url}");
+    print("Número de elementos url: ${reportMP.alertNoteUrl}");
 
     // TODO: implement build
     return Scaffold(
       // Cabecera *es un beta
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: Colors.lightGreen,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,7 +38,8 @@ class ReportDetailPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ),*/
+      appBar: const AppbarEncuentraMe(title: 'EncuentraMe!'),
 
       // Body: Detalle de la carta
       body: SingleChildScrollView(
@@ -57,10 +59,14 @@ class ReportDetailPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Foto del desaparecido
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 40,
-                      backgroundImage:
-                          AssetImage('assets/profile_placeholder.png'),
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: reportMP.image1 != null
+                          ? NetworkImage(reportMP.image1!)
+                          : const AssetImage('assets/profile_placeholder.png')
+                              as ImageProvider,
+                      onBackgroundImageError: (_, __) {},
                     ),
                     const SizedBox(width: 16),
                     // Informacion Personal
@@ -102,16 +108,16 @@ class ReportDetailPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // ${reportMP.propiedad}
-                          Text("Tez: "),
-                          Text("Sangre: "),
-                          Text("Contextura: "),
-                          Text("Estatura: m"),
+                          Text("Tez: ${reportMP.tez ?? 'N/A'}"),
+                          Text("Sangre: ${reportMP.sangre ?? 'N/A'}"),
+                          Text("Contextura: ${reportMP.contextura ?? 'N/A'}"),
+                          Text("Estatura: ${reportMP.estatura ?? 'N/A'}"),
                         ],
                       ),
                     ),
@@ -124,15 +130,15 @@ class ReportDetailPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Cabello: "),
-                          Text("Boca: "),
-                          Text("Ojos: "),
-                          Text("Nariz: "),
+                          Text("Cabello: ${reportMP.cabello ?? 'N/A'}"),
+                          Text("Boca: ${reportMP.boca ?? 'N/A'}"),
+                          Text("Ojos: ${reportMP.ojos ?? 'N/A'}"),
+                          Text("Nariz: ${reportMP.nariz ?? 'N/A'}"),
                         ],
                       ),
                     ),
@@ -168,13 +174,17 @@ class ReportDetailPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Galería de fotos en un Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildPictureBox(),
-                _buildPictureBox(),
-                _buildPictureBox(),
-              ],
+            // === Galería de fotos (aquí solo tienes image1, puedes duplicar si hay más) ===
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: SizedBox(
+                height: 200,
+                child: reportMP.image1 != null
+                    ? Image.network(reportMP.image1!, fit: BoxFit.cover)
+                    : Center(child: Text("Sin imagen disponible")),
+              ),
             ),
           ],
         ),
@@ -237,22 +247,6 @@ class ReportDetailPage extends StatelessWidget {
           Icons.camera_alt,
           size: 40.0,
           color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPictureBox() {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: SizedBox(
-        width: 80,
-        height: 80,
-        child: const Center(
-          child: Text("Picture"),
         ),
       ),
     );
