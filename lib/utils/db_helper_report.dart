@@ -40,21 +40,40 @@ class DbHelper {
         bornCountry TEXT,
         lastSeen TEXT,
         placeLastSeen TEXT,
-        url TEXT
+        tez TEXT,
+        sangre TEXT,
+        contextura TEXT,
+        estatura TEXT,
+        cabello TEXT,
+        boca TEXT,
+        ojos TEXT,
+        nariz TEXT,
+        alertNoteUrl TEXT,
+        image1 TEXT
       )
     ''');
   }
 
   // Agregar un report
-  Future<int> addReport(
-      String name,
-      String lastName,
-      String status,
-      String age,
-      String bornCountry,
-      String lastSeen,
-      String placeLastSeen,
-      String url) async {
+  Future<int> addReport({
+    required String name,
+    required String lastName,
+    required String status,
+    required String age,
+    required String bornCountry,
+    required String lastSeen,
+    required String placeLastSeen,
+    String? tez,
+    String? sangre,
+    String? contextura,
+    String? estatura,
+    String? cabello,
+    String? boca,
+    String? ojos,
+    String? nariz,
+    required String alertNoteUrl,
+    String? image1,
+  }) async {
     final db = await database;
     return await db.insert(
       'reports',
@@ -66,7 +85,16 @@ class DbHelper {
         'bornCountry': bornCountry,
         'lastSeen': lastSeen,
         'placeLastSeen': placeLastSeen,
-        'url': url
+        'tez': tez,
+        'sangre': sangre,
+        'contextura': contextura,
+        'estatura': estatura,
+        'cabello': cabello,
+        'boca': boca,
+        'ojos': ojos,
+        'nariz': nariz,
+        'alertNoteUrl': alertNoteUrl,
+        'image1': image1,
       },
     );
   }
@@ -78,16 +106,26 @@ class DbHelper {
   }
 
 // Actualizar un reporte
-  Future<int> updateReport(
-      int id,
-      String name,
-      String lastName,
-      String status,
-      String age,
-      String bornCountry,
-      String lastSeen,
-      String placeLastSeen,
-      String url) async {
+  Future<int> updateReport({
+    required int id,
+    required String name,
+    required String lastName,
+    required String status,
+    required String age,
+    required String bornCountry,
+    required String lastSeen,
+    required String placeLastSeen,
+    String? tez,
+    String? sangre,
+    String? contextura,
+    String? estatura,
+    String? cabello,
+    String? boca,
+    String? ojos,
+    String? nariz,
+    required String alertNoteUrl,
+    String? image1,
+  }) async {
     final db = await database;
     return await db.update(
       'reports',
@@ -99,7 +137,16 @@ class DbHelper {
         'bornCountry': bornCountry,
         'lastSeen': lastSeen,
         'placeLastSeen': placeLastSeen,
-        'url': url
+        'tez': tez,
+        'sangre': sangre,
+        'contextura': contextura,
+        'estatura': estatura,
+        'cabello': cabello,
+        'boca': boca,
+        'ojos': ojos,
+        'nariz': nariz,
+        'alertNoteUrl': alertNoteUrl,
+        'image1': image1,
       },
       where: 'id = ?',
       whereArgs: [id],
