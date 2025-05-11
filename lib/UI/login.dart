@@ -13,6 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   Future<void> _handleLogin() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -52,67 +53,129 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[50],
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              height: 150,
-              color: Colors.grey[300],
-              child:
-                  Center(child: Text('Logo', style: TextStyle(fontSize: 24))),
-            ),
-            SizedBox(height: 20),
-            Text('Hola, Bienvenido de nuevo!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 20),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: _isLoading ? null : _handleLogin,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                width: double.infinity,
-                color: _isLoading ? Colors.grey : Colors.green,
-                child: _isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child:Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 100),
+                    Container(
+                      height: 300,
+                      child: Image.asset(
+                        'assets/images/encuentrame_logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text('Hola, Bienvenido!',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    
+                    SizedBox(height: 40),
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
                         ),
-                      )
-                    : Text('Iniciar Sesión',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white)),
+                        ),
+                      obscureText: !_isPasswordVisible,
+                    ),
+
+                    SizedBox(height: 35),
+                    Center(
+                      child: GestureDetector(
+                        onTap: _isLoading ? null : _handleLogin,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                          decoration: BoxDecoration(
+                            color: _isLoading ? Colors.grey : Colors.green,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: _isLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : Text('Iniciar Sesión',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                        ),
+                      ),
+                    ),
+                  ]
+                )
+              )
+            ),
+          ),
+          
+          // Footer
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: Colors.grey.shade300,
+                  width: 1.0,
+                ),
               ),
             ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '¿No tienes cuenta?',
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 16,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    //Navigator.pop(context);
+                    Navigator.push(context,
                     MaterialPageRoute(builder: (context) => SignUp1Page()));
-              },
-              child: Text('¿No tienes cuenta? Regístrate',
-                  style: TextStyle(color: Colors.blue)),
+                  },
+                  child: Text(
+                    'Regístrate',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                // Lógica para "Contactanos"
-              },
-              child: Text('Contactanos', style: TextStyle(color: Colors.blue)),
-            ),
-          ],
-        ),
+          ),
+        ]
       ),
     );
   }

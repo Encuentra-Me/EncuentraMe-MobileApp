@@ -4,6 +4,7 @@ import 'package:encuentrame_app/UI/reports_details.dart';
 import 'package:encuentrame_app/UI/popups.dart';
 import 'package:encuentrame_app/UI/popup_share_v1.dart';
 import 'package:encuentrame_app/UI/notification.dart';
+import 'package:encuentrame_app/components/app_header.dart';
 import 'package:flutter/material.dart';
 
 class ReportListPage extends StatefulWidget {
@@ -59,48 +60,7 @@ class _ReportListPage extends State<ReportListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //AppBar: Home - EncuentraMe! - User
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.lightGreen,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                _loadReports();
-              },
-            ),
-            const Text("EncuentraMe!", style: TextStyle(color: Colors.white)),
-            IconButton(
-              icon: const Icon(Icons.person),
-              onPressed: () {
-                // aqui va al perfil
-              },
-            ),
-          ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Buscar",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ),
-
+      appBar: AppHeader(currentPage: 'reports'),
       // Body: Lista de Reportes de desaparecidos
       body: ListView.builder(
         itemCount: _reportsMP.length,

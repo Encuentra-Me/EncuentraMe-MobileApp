@@ -24,6 +24,8 @@ class _SignUp1PageState extends State<SignUp1Page> {
   bool _isLoading = false;
   bool _isEmailValid = true;
   String? _emailError;
+  bool _isPasswordVisible = false;
+  bool _isRepeatPasswordVisible = false;
 
   @override
   void initState() {
@@ -133,77 +135,175 @@ class _SignUp1PageState extends State<SignUp1Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[50],
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Crear Cuenta',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
-              Text('Gracias a tu ayuda, más familias podrán reencontrarse',
-                  style: TextStyle(fontSize: 16)),
-              SizedBox(height: 20),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: _emailError,
-                  suffixIcon: _isLoading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 100),
+                    Text('Crear Cuenta',
+                        style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xff2E724F))),
+                    SizedBox(height: 20),
+                    Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16), // Puedes ajustar el valor
+                    child: Text('Gracias a tu ayuda, más familias podrán reencontrarse',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20))),
+
+                    SizedBox(height: 50),
+                      Align(alignment: Alignment.centerLeft, 
+                      child:RichText(
+                        text: TextSpan(
+                          style: TextStyle(color: Colors.black, fontSize: 18), // Estilo base
+                          children: [
+                            TextSpan(text: 'Paso '),
+                            TextSpan(
+                              text: '1',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(text: ' de '),
+                            TextSpan(
+                              text: '2',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      )),
+                    SizedBox(height: 40),
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        errorText: _emailError,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                        suffixIcon: _isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : _isEmailValid && emailController.text.isNotEmpty
+                                ? Icon(Icons.check_circle, color: Colors.green)
+                                : null,
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                           ),
-                        )
-                      : _isEmailValid && emailController.text.isNotEmpty
-                          ? Icon(Icons.check_circle, color: Colors.green)
-                          : null,
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              TextField(
-                controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-              TextField(
-                controller: repeatPasswordController,
-                decoration: InputDecoration(labelText: 'Repetir Password'),
-                obscureText: true,
-              ),
-              SizedBox(height: 20),
-              GestureDetector(
-                onTap: _isLoading ? null : _handleNext,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  width: double.infinity,
-                  color: _isLoading ? Colors.grey : Colors.green,
-                  child: _isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: !_isPasswordVisible,
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: repeatPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Repetir contraseña',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isRepeatPasswordVisible ? Icons.visibility : Icons.visibility_off,
                           ),
-                        )
-                      : Text('Siguiente',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white)),
+                          onPressed: () {
+                            setState(() {
+                              _isRepeatPasswordVisible = !_isRepeatPasswordVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: !_isRepeatPasswordVisible,
+                    ),
+
+
+                    SizedBox(height: 35),
+                    Center(
+                      child: GestureDetector(
+                        onTap: _isLoading ? null : _handleNext,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                          decoration: BoxDecoration(
+                            color: _isLoading ? Colors.grey : Colors.green,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: _isLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : Text('Siguiente',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  )),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  // Regresa al Login
-                  Navigator.pop(context);
-                },
-                child: Text('¿Ya tienes cuenta? Inicia sesión',
-                    style: TextStyle(color: Colors.blue)),
-              ),
-            ],
+            ),
           ),
-        ),
+          // Footer
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: Colors.grey.shade300,
+                  width: 1.0,
+                ),
+              ),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '¿Ya tienes cuenta?',
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 16,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Inicia sesión',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

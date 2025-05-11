@@ -21,12 +21,15 @@ class SignUp2Page extends StatefulWidget {
 
 class _SignUp2PageState extends State<SignUp2Page> {
   final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController(); 
+  final TextEditingController paternalLastNameController = TextEditingController();
+  final TextEditingController maternalLastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
   final TextEditingController documentNumberController = TextEditingController();
   final AuthService _authService = AuthService();
   String selectedDocumentType = 'DNI';
+  String selectedCountryCode = '+51';
   bool isChecked = false;
   bool _isLoading = false;
 
@@ -130,44 +133,48 @@ class _SignUp2PageState extends State<SignUp2Page> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Crear Cuenta',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xff2E724F))),
               SizedBox(height: 20),
               Text('Paso 2 de 2', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 20),
+              SizedBox(height: 40),
               TextField(
                 controller: firstNameController,
-                decoration: InputDecoration(labelText: 'Nombres'),
-              ),
-              TextField(
-                controller: lastNameController,
-                decoration: InputDecoration(labelText: 'Apellidos'),
-              ),
-              TextField(
-                controller: phoneController,
-                decoration: InputDecoration(labelText: 'Celular'),
-                keyboardType: TextInputType.phone,
-              ),
-              GestureDetector(
-                onTap: () => _selectDate(context),
-                child: AbsorbPointer(
-                  child: TextField(
-                    controller: birthDateController,
-                    decoration: InputDecoration(
-                      labelText: 'Fecha de Nacimiento',
-                      suffixIcon: Icon(Icons.calendar_today),
-                    ),
-                  ),
-                ),
+                decoration: InputDecoration(labelText: 'Nombres', 
+                        border: OutlineInputBorder()),
               ),
               SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
-                    flex: 2,
+                    child: TextField(
+                      controller: paternalLastNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Apellido Paterno',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: maternalLastNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Apellido Materno',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
                     child: DropdownButtonFormField<String>(
                       value: selectedDocumentType,
                       decoration: InputDecoration(
-                        labelText: 'Tipo de Documento',
+                        labelText: 'Tipo Documento',
+                        border: OutlineInputBorder(),
                       ),
                       items: ['DNI', 'Pasaporte']
                           .map((type) => DropdownMenuItem(
@@ -180,22 +187,83 @@ class _SignUp2PageState extends State<SignUp2Page> {
                           selectedDocumentType = value!;
                         });
                       },
+                    ), //flex: 2,
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: documentNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Número Documento',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ), //flex: 3,
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: birthDateController,
+                    decoration: InputDecoration(
+                      labelText: 'Fecha de Nacimiento',
+                      suffixIcon: Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: DropdownButtonFormField<String>(
+                      value: selectedCountryCode,
+                      decoration: InputDecoration(
+                        labelText: 'Código',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem(value: '+51', child: Text('+51')),
+                        DropdownMenuItem(value: '+1', child: Text('+1')),
+                        DropdownMenuItem(value: '+52', child: Text('+52')),
+                        DropdownMenuItem(value: '+54', child: Text('+54')),
+                        DropdownMenuItem(value: '+56', child: Text('+56')),
+                        DropdownMenuItem(value: '+57', child: Text('+57')),
+                        DropdownMenuItem(value: '+58', child: Text('+58')),
+                        DropdownMenuItem(value: '+591', child: Text('+591')),
+                        DropdownMenuItem(value: '+592', child: Text('+592')),
+                        DropdownMenuItem(value: '+593', child: Text('+593')),
+                        DropdownMenuItem(value: '+595', child: Text('+595')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCountryCode = value!;
+                        });
+                      },
                     ),
                   ),
                   SizedBox(width: 10),
                   Expanded(
                     flex: 3,
                     child: TextField(
-                      controller: documentNumberController,
+                      controller: phoneController,
                       decoration: InputDecoration(
-                        labelText: 'Número de Documento',
+                        labelText: 'Número de Celular',
+                        border: OutlineInputBorder(),
+                        hintText: '999999999',
                       ),
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.phone,
                     ),
                   ),
                 ],
               ),
               CheckboxListTile(
+                controlAffinity: ListTileControlAffinity.leading,
                 title: Text('He leído y acepto los Términos y Condiciones'),
                 value: isChecked,
                 onChanged: (bool? value) {
@@ -205,21 +273,30 @@ class _SignUp2PageState extends State<SignUp2Page> {
                 },
               ),
               SizedBox(height: 20),
-              GestureDetector(
-                onTap: _isLoading ? null : _handleRegister,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  width: double.infinity,
-                  color: _isLoading ? Colors.grey : Colors.green,
-                  child: _isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Text('Registrarse',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white)),
+              Center(
+                child: GestureDetector(
+                  onTap: _isLoading ? null : _handleRegister,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                    decoration: BoxDecoration(
+                      color: _isLoading ? Colors.grey : Colors.green,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: _isLoading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text('Registrarse',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            )),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
