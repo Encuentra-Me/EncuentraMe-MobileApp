@@ -9,7 +9,7 @@ import 'package:encuentrame_app/UI/popup_share_v1.dart';
 import 'package:encuentrame_app/utils/app_bar.dart';
 import 'package:encuentrame_app/utils/bottom_bar.dart';
 import 'package:encuentrame_app/UI/notification.dart';
-import 'package:encuentrame_app/UI/Camera_Capture.dart';
+//import 'package:encuentrame_app/UI/Camera_Capture.dart';
 import 'package:flutter/material.dart';
 
 class ReportListPage extends StatefulWidget {
