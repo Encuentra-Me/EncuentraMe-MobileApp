@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         Locale('es', 'ES'), // Spanish
         Locale('en', 'US'), // English
       ],
-      home: ReportListPage(),
+      home: LoginPage(),
       //home: LoginPage(),
       //home: ReportTestPage(),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:encuentrame_app/UI/reports_list.dart';
+import 'package:encuentrame_app/UI/login.dart';
+import 'package:encuentrame_app/services/auth_service.dart';
 
 class CustomBottomBar extends StatelessWidget {
   const CustomBottomBar({super.key});
@@ -46,10 +48,50 @@ class CustomBottomBar extends StatelessWidget {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.more_horiz),
-                  onPressed: () {
-                    // aqui va a mas opciones
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => PerfilPage()));
+                  icon: const Icon(Icons.logout),
+                  onPressed: () async {
+                    // Show confirmation dialog
+                    final shouldLogout = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Cerrar Sesión'),
+                          content: const Text('¿Estás seguro que deseas cerrar sesión?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (shouldLogout == true) {
+                      try {
+                        final authService = AuthService();
+                        await authService.logout();
+                        
+                        // Navigate to login page and clear the navigation stack
+                        if (context.mounted) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
+                            (route) => false,
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error al cerrar sesión: ${e.toString()}')),
+                          );
+                        }
+                      }
+                    }
                   },
                 ),
               ],
