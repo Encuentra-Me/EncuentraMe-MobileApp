@@ -83,7 +83,7 @@ class _SignUp1PageState extends State<SignUp1Page> {
     } catch (e) {
       setState(() {
         _isEmailValid = false;
-        _emailError = 'Error al validar el emailowo';
+        _emailError = 'Error al validar el email';
       });
     } finally {
       setState(() {
@@ -149,13 +149,15 @@ class _SignUp1PageState extends State<SignUp1Page> {
                         style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xff2E724F))),
                     SizedBox(height: 20),
                     Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16), // Puedes ajustar el valor
-                    child: Text('Gracias a tu ayuda, más familias podrán reencontrarse',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20))),
-
+                      padding: EdgeInsets.symmetric(horizontal: 16), // Puedes ajustar el valor
+                      child: Text('Gracias a tu ayuda, más familias podrán reencontrarse',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20))
+                    ),
                     SizedBox(height: 50),
-                      Align(alignment: Alignment.centerLeft, 
+
+                    // ================== PASO 1 DE 2
+                    Align(alignment: Alignment.centerLeft, 
                       child:RichText(
                         text: TextSpan(
                           style: TextStyle(color: Colors.black, fontSize: 18), // Estilo base
@@ -172,8 +174,11 @@ class _SignUp1PageState extends State<SignUp1Page> {
                             ),
                           ],
                         ),
-                      )),
+                      )
+                    ),
                     SizedBox(height: 40),
+                    
+                    // ================== EMAIL
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -193,8 +198,11 @@ class _SignUp1PageState extends State<SignUp1Page> {
                                 : null,
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      onSubmitted: (_) => _handleNext(),
                     ),
                     SizedBox(height: 16),
+                    
+                    // ================== CONTRASEÑAS
                     TextField(
                       controller: passwordController,
                       decoration: InputDecoration(
@@ -212,6 +220,7 @@ class _SignUp1PageState extends State<SignUp1Page> {
                         ),
                       ),
                       obscureText: !_isPasswordVisible,
+                      onSubmitted: (_) => _handleNext(),
                     ),
                     SizedBox(height: 16),
                     TextField(
@@ -231,9 +240,10 @@ class _SignUp1PageState extends State<SignUp1Page> {
                         ),
                       ),
                       obscureText: !_isRepeatPasswordVisible,
+                      onSubmitted: (_) => _handleNext(),
                     ),
 
-
+                    // ================== BOTÓN SIGUIENTE
                     SizedBox(height: 35),
                     Center(
                       child: GestureDetector(

@@ -37,6 +37,8 @@ class AuthService {
         }),
       );
 
+      //print("response.statusCode ${response.statusCode}");
+      
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         // Store the token
@@ -44,11 +46,18 @@ class AuthService {
           await _saveToken(responseData['token']);
         }
         return responseData;
+      } else if (response.statusCode == 401) {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Invalid credentials');
       } else {
-        throw Exception('Failed to login: ${response.statusCode}');
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Internal Server Error');
       }
     } catch (e) {
-      throw Exception('Error connecting to server: $e');
+      if (e is Exception && e.toString().contains('Invalid credentials')) {
+        throw Exception('Credenciales inválidas');
+      }
+      throw Exception('Error interno de la aplicación');
     }
   }
 
@@ -76,11 +85,15 @@ class AuthService {
     required String email,
     required String password,
     required String firstName,
-    required String lastName,
-    required String phone,
-    required String birthDate,
+    required String paternalLastName,
+    required String maternalLastName,
     required String documentType,
     required String documentNumber,
+    required String birthDate,
+    required String? countryCode,
+    required String phone,
+    required String? ubigeo,
+    required int roleId,
   }) async {
     try {
       final response = await http.post(
@@ -92,11 +105,15 @@ class AuthService {
           'email': email,
           'password': password,
           'firstName': firstName,
-          'lastName': lastName,
-          'phone': phone,
-          'birthDate': birthDate,
+          'paternalLastName': paternalLastName,
+          'maternalLastName': maternalLastName,
           'documentType': documentType,
           'documentNumber': documentNumber,
+          'birthDate': birthDate,
+          'countryCode': countryCode,
+          'phone': phone,
+          'ubigeo': ubigeo,
+          'roleId': roleId,
         }),
       );
 
@@ -140,6 +157,26 @@ class AuthService {
       // Clear the token even if the logout request fails
       await _clearToken();
       throw Exception('Error during logout: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getRoles() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/roles'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> roles = jsonDecode(response.body);
+        return roles.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Failed to fetch roles: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching roles: $e');
     }
   }
 } 

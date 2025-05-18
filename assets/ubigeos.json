@@ -1,0 +1,127 @@
+[
+  {
+    "codigo": "15",
+    "nombre": "LIMA",
+    "codigo_padre": null
+  },
+  {
+    "codigo": "1501",
+    "nombre": "LIMA METROPOLITANA",
+    "codigo_padre": "15"
+  },
+  {
+    "codigo": "150140",
+    "nombre": "SANTIAGO DE SURCO",
+    "codigo_padre": "1501"
+  },
+  {
+    "codigo": "150131",
+    "nombre": "SAN BORJA",
+    "codigo_padre": "1501"
+  },
+  {
+    "codigo": "150122",
+    "nombre": "MIRAFLORES",
+    "codigo_padre": "1501"
+  },
+  {
+    "codigo": "150133",
+    "nombre": "SAN JUAN DE LURIGANCHO",
+    "codigo_padre": "1501"
+  },
+  {
+    "codigo": "150101",
+    "nombre": "LIMA",
+    "codigo_padre": "1501"
+  },
+  {
+    "codigo": "1507",
+    "nombre": "HUAROCHIRÍ",
+    "codigo_padre": "15"
+  },
+  {
+    "codigo": "150701",
+    "nombre": "MATUCANA",
+    "codigo_padre": "1507"
+  },
+  {
+    "codigo": "150722",
+    "nombre": "RICARDO PALMA",
+    "codigo_padre": "1507"
+  },
+  {
+    "codigo": "08",
+    "nombre": "CUSCO",
+    "codigo_padre": null
+  },
+  {
+    "codigo": "0801",
+    "nombre": "CUSCO",
+    "codigo_padre": "08"
+  },
+  {
+    "codigo": "080103",
+    "nombre": "SANTIAGO",
+    "codigo_padre": "0801"
+  },
+  {
+    "codigo": "080102",
+    "nombre": "SAN SEBASTIÁN",
+    "codigo_padre": "0801"
+  },
+  {
+    "codigo": "080104",
+    "nombre": "WANCHAQ",
+    "codigo_padre": "0801"
+  },
+  {
+    "codigo": "0803",
+    "nombre": "CALCA",
+    "codigo_padre": "08"
+  },
+  {
+    "codigo": "080301",
+    "nombre": "CALCA",
+    "codigo_padre": "0803"
+  },
+  {
+    "codigo": "080302",
+    "nombre": "COYA",
+    "codigo_padre": "0803"
+  },
+  {
+    "codigo": "04",
+    "nombre": "AREQUIPA",
+    "codigo_padre": null
+  },
+  {
+    "codigo": "0401",
+    "nombre": "AREQUIPA",
+    "codigo_padre": "04"
+  },
+  {
+    "codigo": "040110",
+    "nombre": "CERRO COLORADO",
+    "codigo_padre": "0401"
+  },
+  {
+    "codigo": "040104",
+    "nombre": "YANAHUARA",
+    "codigo_padre": "0401"
+  },
+  {
+    "codigo": "040105",
+    "nombre": "CAYMA",
+    "codigo_padre": "0401"
+  },
+  {
+    "codigo": "0405",
+    "nombre": "CAMANÁ",
+    "codigo_padre": "04"
+  },
+  {
+    "codigo": "040501",
+    "nombre": "CAMANÁ",
+    "codigo_padre": "0405"
+  }
+]

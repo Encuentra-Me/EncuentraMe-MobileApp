@@ -1,0 +1,123 @@
+[
+    {
+      "codigo": "US",
+      "nombre": "Estados Unidos",
+      "codigo_celular": "+1",
+      "icono_bandera": "https://flagcdn.com/w40/us.png"
+    },
+    {
+      "codigo": "AR",
+      "nombre": "Argentina",
+      "icono_bandera": "https://flagcdn.com/w40/ar.png",
+      "codigo_celular": "+54"
+    },
+    {
+      "codigo": "BO",
+      "nombre": "Bolivia",
+      "icono_bandera": "https://flagcdn.com/w40/bo.png",
+      "codigo_celular": "+591"
+    },
+    {
+      "codigo": "BR",
+      "nombre": "Brasil",
+      "icono_bandera": "https://flagcdn.com/w40/br.png",
+      "codigo_celular": "+55"
+    },
+    {
+      "codigo": "CL",
+      "nombre": "Chile",
+      "icono_bandera": "https://flagcdn.com/w40/cl.png",
+      "codigo_celular": "+56"
+    },
+    {
+      "codigo": "CO",
+      "nombre": "Colombia",
+      "icono_bandera": "https://flagcdn.com/w40/co.png",
+      "codigo_celular": "+57"
+    },
+    {
+      "codigo": "CR",
+      "nombre": "Costa Rica",
+      "icono_bandera": "https://flagcdn.com/w40/cr.png",
+      "codigo_celular": "+506"
+    },
+    {
+      "codigo": "CU",
+      "nombre": "Cuba",
+      "icono_bandera": "https://flagcdn.com/w40/cu.png",
+      "codigo_celular": "+53"
+    },
+    {
+      "codigo": "DO",
+      "nombre": "República Dominicana",
+      "icono_bandera": "https://flagcdn.com/w40/do.png",
+      "codigo_celular": "+1-809"
+    },
+    {
+      "codigo": "EC",
+      "nombre": "Ecuador",
+      "icono_bandera": "https://flagcdn.com/w40/ec.png",
+      "codigo_celular": "+593"
+    },
+    {
+      "codigo": "GT",
+      "nombre": "Guatemala",
+      "icono_bandera": "https://flagcdn.com/w40/gt.png",
+      "codigo_celular": "+502"
+    },
+    {
+      "codigo": "HN",
+      "nombre": "Honduras",
+      "icono_bandera": "https://flagcdn.com/w40/hn.png",
+      "codigo_celular": "+504"
+    },
+    {
+      "codigo": "MX",
+      "nombre": "México",
+      "icono_bandera": "https://flagcdn.com/w40/mx.png",
+      "codigo_celular": "+52"
+    },
+    {
+      "codigo": "NI",
+      "nombre": "Nicaragua",
+      "icono_bandera": "https://flagcdn.com/w40/ni.png",
+      "codigo_celular": "+505"
+    },
+    {
+      "codigo": "PA",
+      "nombre": "Panamá",
+      "icono_bandera": "https://flagcdn.com/w40/pa.png",
+      "codigo_celular": "+507"
+    },
+    {
+      "codigo": "PY",
+      "nombre": "Paraguay",
+      "icono_bandera": "https://flagcdn.com/w40/py.png",
+      "codigo_celular": "+595"
+    },
+    {
+      "codigo": "PE",
+      "nombre": "Perú",
+      "icono_bandera": "https://flagcdn.com/w40/pe.png",
+      "codigo_celular": "+51"
+    },
+    {
+      "codigo": "SV",
+      "nombre": "El Salvador",
+      "icono_bandera": "https://flagcdn.com/w40/sv.png",
+      "codigo_celular": "+503"
+    },
+    {
+      "codigo": "UY",
+      "nombre": "Uruguay",
+      "icono_bandera": "https://flagcdn.com/w40/uy.png",
+      "codigo_celular": "+598"
+    },
+    {
+      "codigo": "VE",
+      "nombre": "Venezuela",
+      "icono_bandera": "https://flagcdn.com/w40/ve.png",
+      "codigo_celular": "+58"
+    }
+  ]
+  

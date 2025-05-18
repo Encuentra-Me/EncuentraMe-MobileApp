@@ -39,9 +39,16 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => ReportListPage()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al iniciar sesión: ${e.toString()}')),
-      );
+      String errorMessage = e.toString();
+      if (errorMessage.contains('Invalid credentials') || errorMessage.contains('Credenciales inválidas')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Credenciales inválidas')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error interno de la aplicación')),
+        );
+      }
     } finally {
       setState(() {
         _isLoading = false;
@@ -82,6 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      onSubmitted: (_) => _handleLogin(),
                     ),
                     SizedBox(height: 16),
                     TextField(
@@ -101,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         ),
                       obscureText: !_isPasswordVisible,
+                      onSubmitted: (_) => _handleLogin(),
                     ),
 
                     SizedBox(height: 35),

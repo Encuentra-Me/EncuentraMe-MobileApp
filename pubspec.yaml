@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  markdown_widget: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -77,6 +78,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
     - assets/adultos.json
     - assets/menores.json
+    - assets/ubigeos.json
+    - assets/codigopaises.json
+    - assets/terminos_condiciones.md
+    - assets/politica_privacidad.md
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
