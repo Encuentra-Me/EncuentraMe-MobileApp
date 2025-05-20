@@ -9,8 +9,7 @@ import 'package:encuentrame_app/UI/popup_share_v1.dart';
 import 'package:encuentrame_app/utils/app_bar.dart';
 import 'package:encuentrame_app/utils/bottom_bar.dart';
 import 'package:encuentrame_app/UI/notification.dart';
-import 'package:encuentrame_app/components/app_header.dart';
-//import 'package:encuentrame_app/UI/Camera_Capture.dart';
+import 'package:encuentrame_app/UI/camera_view.dart';
 import 'package:flutter/material.dart';
 
 class ReportListPage extends StatefulWidget {
@@ -137,48 +136,7 @@ class _ReportListPage extends State<ReportListPage> {
     }).toList();
 
     return Scaffold(
-      //AppBar: Home - EncuentraMe! - User
-      /*appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.lightGreen,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                _loadReportsFromDb();
-              },
-            ),
-            const Text("EncuentraMe!", style: TextStyle(color: Colors.white)),
-            IconButton(
-              icon: const Icon(Icons.person),
-              onPressed: () {
-                // aqui va al perfil
-              },
-            ),
-          ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Buscar",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ),*/
-      //appBar: AppHeader(currentPage: 'reports'),
+      //AppBar: EncuentraMe! - User
       appBar: const AppbarEncuentraMe(title: 'EncuentraMe!'),
 
       // Body: Lista de Reportes de desaparecidos
@@ -354,195 +312,15 @@ class _ReportListPage extends State<ReportListPage> {
           ),
         ],
       ),
-      /*body: ListView.builder(
-        itemCount: _reportsMP.length,
-        itemBuilder: (context, index) {
-          final reportmp = _reportsMP[index];
-          return GestureDetector(
-            onTap: () {
-              // Navegar a la pantalla de detalles pasando el item seleccionado
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReportDetailPage(reportMP: reportmp),
-                ),
-              );
-            },
-            child: Card(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Foto del desaparecido
-                    /*ClipRRect(
 
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        'assets/profile_placeholder.jpg',
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      ),
-                    ),*/
-
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: reportmp.image1 != null
-                          ? Image.network(
-                              reportmp.image1!,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                              // Si la URL falla, muestra el placeholder:
-                              errorBuilder: (_, __, ___) => _placeholderImage(),
-                            )
-                          : _placeholderImage(),
-                    ),
-
-                    const SizedBox(width: 16),
-                    // Información del desaparecido
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Nombre: ${reportmp.name}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Edad: ${reportmp.age} años',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Fecha del hecho: ${reportmp.lastSeen}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Lugar del hecho: ${reportmp.placeLastSeen}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Ícono de marcador y opciones
-                    Column(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            isSaved ? Icons.bookmark : Icons.bookmark_border,
-                            color: isSaved ? Colors.cyan : null,
-                          ),
-                          onPressed: () {
-                            // Acción para guardar como favorito
-
-                            setState(() {
-                              isSaved = !isSaved; // Cambia el estado
-                            });
-                          },
-                        ),
-                        IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            onPressed: () {
-                              sharePopUpV1(context, reportmp.alertNoteUrl);
-                            }),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-      */
-      // Bottom: Notificacion - Camera - Add report
-      /*bottomNavigationBar: BottomAppBar(
-          shape: const CircularNotchedRectangle(),
-          notchMargin: 8.0,
-          child: SizedBox(
-            height: 60.0,
-            //child: Padding(
-            //padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            //child: Padding(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.notifications),
-                      iconSize: 40.0,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => NotificationsPage()));
-                      },
-                    ),
-                    //const Text("Notificación"),
-                  ],
-                ),
-
-                const SizedBox(
-                  width: 60,
-                  height: 80,
-                ), // Espacio para el botón de la cámara
-
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      iconSize: 40.0,
-                      onPressed: () {
-                        AddReportProcess(context: context).startProcess();
-                        //print("Agregar Reporte presionado");
-                      },
-                    ),
-                    //Text("Agregar Reporte"),
-                  ],
-                ),
-              ],
-            ),
-          )),
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          //print("Cámara presionada");
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CameraCapturePage()),
-          );
-        },
-        backgroundColor: Colors.lightGreen,
-        shape: const CircleBorder(),
-        child: const Icon(
-          Icons.camera_alt,
-          size: 40.0,
-          color: Colors.white,
-        ),
-      ),
-    */
-
+      // Bottom:
       bottomNavigationBar: const CustomBottomBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: CustomBottomBar.buildCameraFab(
         onPressed: () {
-          // Aquí va la acción de reconocimiento facial
+          // Aquí va a la camara para iniciar el proceso de reconocimiento facial
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CameraView()));
         },
       ),
     );
