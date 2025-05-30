@@ -1,0 +1,32 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-encuentrameapp-dev-1cec6-authRole",
+      "UnauthRoleArn": "arn:aws:iam::625572953803:role/amplify-encuentrameapp-dev-1cec6-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::625572953803:role/amplify-encuentrameapp-dev-1cec6-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-encuentrameapp-dev-1cec6-deployment",
+      "UnauthRoleName": "amplify-encuentrameapp-dev-1cec6-unauthRole",
+      "StackName": "amplify-encuentrameapp-dev-1cec6",
+      "StackId": "arn:aws:cloudformation:us-east-2:625572953803:stack/amplify-encuentrameapp-dev-1cec6/42ae06a0-37a8-11f0-ae98-02898aac6111",
+      "AmplifyAppId": "d12ia2h0xzq45t"
+    },
+    "categories": {
+      "auth": {
+        "encuentrameapp06230c2b": {}
+      },
+      "function": {
+        "rekognitionMatch": {
+          "deploymentBucketName": "amplify-encuentrameapp-dev-1cec6-deployment",
+          "s3Key": "amplify-builds/rekognitionMatch-5776693979786b6e5044-build.zip"
+        }
+      },
+      "storage": {
+        "encuentrameStorage": {}
+      },
+      "api": {
+        "rekognitionApi": {}
+      }
+    }
+  }
+}

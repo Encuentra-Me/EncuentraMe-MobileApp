@@ -4,11 +4,11 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:encuentrame_app/utils/db_helper_report.dart';
 import 'package:encuentrame_app/models/report.dart';
 import 'package:encuentrame_app/UI/reports_details.dart';
-import 'package:encuentrame_app/UI/popups.dart';
+//import 'package:encuentrame_app/UI/popups.dart';
 import 'package:encuentrame_app/UI/popup_share_v1.dart';
 import 'package:encuentrame_app/utils/app_bar.dart';
 import 'package:encuentrame_app/utils/bottom_bar.dart';
-import 'package:encuentrame_app/UI/notification.dart';
+//import 'package:encuentrame_app/UI/notification.dart';
 import 'package:encuentrame_app/UI/camera_view.dart';
 import 'package:flutter/material.dart';
 
@@ -136,6 +136,7 @@ class _ReportListPage extends State<ReportListPage> {
     }).toList();
 
     return Scaffold(
+      //AppBar: EncuentraMe! - User
       //AppBar: EncuentraMe! - User
       appBar: const AppbarEncuentraMe(title: 'EncuentraMe!'),
 
@@ -314,10 +315,15 @@ class _ReportListPage extends State<ReportListPage> {
       ),
 
       // Bottom:
+
+      // Bottom:
       bottomNavigationBar: const CustomBottomBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: CustomBottomBar.buildCameraFab(
         onPressed: () {
+          // Aquí va a la camara para iniciar el proceso de reconocimiento facial
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CameraView()));
           // Aquí va a la camara para iniciar el proceso de reconocimiento facial
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CameraView()));

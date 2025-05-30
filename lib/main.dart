@@ -1,15 +1,31 @@
 import 'package:encuentrame_app/UI/reports_list.dart';
 import 'package:encuentrame_app/UI/login.dart';
-//import 'package:encuentrame_app/UI/report_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_api/amplify_api.dart'; // plugin REST/API
+import 'amplifyconfiguration.dart'; // configurado por Amplify CLI
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 
-void main() {
+void main() async {
   /*WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.manual,
     overlays: [SystemUiOverlay.top],
   );*/
+
+  // Agrega el plugin de API y configura Amplify solo UNA VEZ
+  try {
+    await Amplify.addPlugins([
+      AmplifyAPI(), // para el endpoint REST
+      AmplifyStorageS3(), // para subir/descargar de S3
+    ]);
+    await Amplify.configure(amplifyconfig);
+    debugPrint('✅ Amplify configured');
+  } catch (e) {
+    debugPrint('⚠️ Amplify configuration error: $e');
+  }
+
   runApp(const MyApp());
 }
 
@@ -34,9 +50,8 @@ class MyApp extends StatelessWidget {
         Locale('es', 'ES'), // Spanish
         Locale('en', 'US'), // English
       ],
-      home: LoginPage(),
       //home: LoginPage(),
-      //home: ReportTestPage(),
+      home: ReportListPage(),
     );
   }
 }

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "storage": {
+      "encuentrameStorage": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

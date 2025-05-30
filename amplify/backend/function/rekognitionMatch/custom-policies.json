@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "rekognition:SearchFacesByImage"
+      ],
+      "Resource": [
+        "arn:aws:rekognition:us-east-2:625572953803:collection/MiColeccionDesaparecidos"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::encuentreme-bucket-rekognition/faces/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "resourceName": "encuentrameStorage",
+  "policyUUID": "05c6b667",
+  "bucketName": "encuentrameappstorage-1",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

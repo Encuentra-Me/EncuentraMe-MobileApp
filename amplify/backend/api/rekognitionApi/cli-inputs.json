@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/match": {
+      "name": "/match",
+      "lambdaFunction": "rekognitionMatch",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

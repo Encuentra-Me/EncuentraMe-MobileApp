@@ -1,0 +1,87 @@
+{
+  "api": {
+    "rekognitionApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "rekognitionMatch"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "encuentrameapp06230c2b": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "rekognitionMatch": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "encuentrameStorage"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_rekognitionMatch_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rekognitionMatch"
+        }
+      ]
+    },
+    "AMPLIFY_function_rekognitionMatch_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rekognitionMatch"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "encuentrameStorage": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  }
+}
