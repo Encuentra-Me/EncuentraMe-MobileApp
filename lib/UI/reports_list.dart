@@ -1,7 +1,8 @@
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+//import 'dart:convert';
+//import 'package:flutter/services.dart' show rootBundle;
 
-import 'package:encuentrame_app/utils/db_helper_report.dart';
+//import 'package:encuentrame_app/utils/db_helper_report.dart';
+import 'package:encuentrame_app/services/report_api_service.dart';
 import 'package:encuentrame_app/models/report.dart';
 import 'package:encuentrame_app/UI/reports_details.dart';
 //import 'package:encuentrame_app/UI/popups.dart';
@@ -20,99 +21,109 @@ class ReportListPage extends StatefulWidget {
 }
 
 class _ReportListPage extends State<ReportListPage> {
-  final DbHelper _dbHelper = DbHelper();
+  //final DbHelper _dbHelper = DbHelper();
+  final ReportApiService _apiService = ReportApiService();
   List<ReportMP> _reportsMP = [];
   String _selectedGroup = 'menores'; // 'adultos' o 'menores'
   String _searchQuery = '';
+  bool isSaved = false;
 
   // ── AUXILIAR: carga desde JSON
-  Future<List<ReportMP>> _loadReportsFromJson(String filename) async {
-    final jsonStr = await rootBundle.loadString('assets/$filename.json');
-    final List<dynamic> jsonList = json.decode(jsonStr);
-    return jsonList
-        .map((item) => ReportMP.fromJson(item as Map<String, dynamic>))
-        .toList();
-  }
+  /*Future<List<ReportMP>> _loadReportsFromJson(String filename) async {
+      final jsonStr = await rootBundle.loadString('assets/$filename.json');
+      final List<dynamic> jsonList = json.decode(jsonStr);
+      return jsonList
+          .map((item) => ReportMP.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
 
-  // ── AUXILIAR: llena BD si está vacía
-  Future<void> _seedDatabase() async {
-    final existing = await _dbHelper.getReports();
-    if (existing.isEmpty) {
-      //final jsonList = await _loadReportsFromJson('menores');
+    // ── AUXILIAR: llena BD si está vacía
+    Future<void> _seedDatabase() async {
+      final existing = await _dbHelper.getReports();
+      if (existing.isEmpty) {
+        //final jsonList = await _loadReportsFromJson('menores');
 
-      // 1) Sembrar menores.json
-      final minors = await _loadReportsFromJson('menores');
-      for (var r in minors) {
-        await _dbHelper.addReport(
-          name: r.name,
-          lastName: r.lastName,
-          status: r.status,
-          age: r.age.toString(),
-          bornCountry: r.bornCountry,
-          lastSeen: r.lastSeen,
-          placeLastSeen: r.placeLastSeen,
-          tez: r.tez,
-          sangre: r.sangre,
-          contextura: r.contextura,
-          estatura: r.estatura,
-          cabello: r.cabello,
-          boca: r.boca,
-          ojos: r.ojos,
-          nariz: r.nariz,
-          alertNoteUrl: r.alertNoteUrl,
-          image1: r.image1,
-        );
-      }
-      // 2) Sembrar adultos.json
-      final adults = await _loadReportsFromJson('adultos');
-      for (var r in adults) {
-        await _dbHelper.addReport(
-          name: r.name,
-          lastName: r.lastName,
-          status: r.status,
-          age: r.age.toString(),
-          bornCountry: r.bornCountry,
-          lastSeen: r.lastSeen,
-          placeLastSeen: r.placeLastSeen,
-          tez: r.tez,
-          sangre: r.sangre,
-          contextura: r.contextura,
-          estatura: r.estatura,
-          cabello: r.cabello,
-          boca: r.boca,
-          ojos: r.ojos,
-          nariz: r.nariz,
-          alertNoteUrl: r.alertNoteUrl,
-          image1: r.image1,
-        );
+        // 1) Sembrar menores.json
+        final minors = await _loadReportsFromJson('menores');
+        for (var r in minors) {
+          await _dbHelper.addReport(
+            name: r.name,
+            lastName: r.lastName,
+            status: r.status,
+            age: r.age.toString(),
+            bornCountry: r.bornCountry,
+            lastSeen: r.lastSeen,
+            placeLastSeen: r.placeLastSeen,
+            tez: r.tez,
+            sangre: r.sangre,
+            contextura: r.contextura,
+            estatura: r.estatura,
+            cabello: r.cabello,
+            boca: r.boca,
+            ojos: r.ojos,
+            nariz: r.nariz,
+            alertNoteUrl: r.alertNoteUrl,
+            image1: r.image1,
+          );
+        }
+        // 2) Sembrar adultos.json
+        final adults = await _loadReportsFromJson('adultos');
+        for (var r in adults) {
+          await _dbHelper.addReport(
+            name: r.name,
+            lastName: r.lastName,
+            status: r.status,
+            age: r.age.toString(),
+            bornCountry: r.bornCountry,
+            lastSeen: r.lastSeen,
+            placeLastSeen: r.placeLastSeen,
+            tez: r.tez,
+            sangre: r.sangre,
+            contextura: r.contextura,
+            estatura: r.estatura,
+            cabello: r.cabello,
+            boca: r.boca,
+            ojos: r.ojos,
+            nariz: r.nariz,
+            alertNoteUrl: r.alertNoteUrl,
+            image1: r.image1,
+          );
+        }
       }
     }
-  }
 
-  // Método para cargar los elementos desde la base de datos
-  Future<void> _loadReportsFromDb() async {
-    final reports = await _dbHelper.getReports();
-    setState(() {
-      _reportsMP = reports.map((e) => ReportMP.fromMap(e)).toList();
-    });
+    // Método para cargar los elementos desde la base de datos
+    Future<void> _loadReportsFromDb() async {
+      final reports = await _dbHelper.getReports();
+      setState(() {
+        _reportsMP = reports.map((e) => ReportMP.fromMap(e)).toList();
+      });
 
-    print("Número de elementos <b>: ${_reportsMP.length}");
-  }
+      print("Número de elementos <b>: ${_reportsMP.length}");
+    }*/
 
   @override
   void initState() {
     super.initState();
     //_addInitialReport(); // Agrega un valor a la DB antes de cargar los reportes
     //_loadReportsFromDb();
-    _seedDatabase().then((_) => _loadReportsFromDb());
+    //_seedDatabase().then((_) => _loadReportsFromDb());
+    _fetchReports();
   }
 
-  bool isSaved = false;
+  Future<void> _fetchReports() async {
+    try {
+      final reports = await _apiService.getAllReports();
+      setState(() => _reportsMP = reports);
+    } catch (e) {
+      print('Error al cargar reportes: $e');
+    }
+  }
 
   void _toggleSave() {
     setState(() {
-      isSaved = !isSaved; // Cambia el estado
-    });
+      isSaved = !isSaved;
+    }); // Cambia el estado
 
     // Muestra un SnackBar
     final snackBar = SnackBar(
@@ -127,8 +138,7 @@ class _ReportListPage extends State<ReportListPage> {
   Widget build(BuildContext context) {
     // Genera la lista filtrada según grupo y búsqueda
     final displayed = _reportsMP.where((r) {
-      final age = int.tryParse(r.age) ?? 0;
-      final inGroup = _selectedGroup == 'adultos' ? age >= 18 : age < 18;
+      final inGroup = _selectedGroup == 'adultos' ? r.age >= 18 : r.age < 18;
       final query = _searchQuery.toLowerCase();
       final matchesSearch = r.name.toLowerCase().contains(query) ||
           r.lastName.toLowerCase().contains(query);
@@ -136,7 +146,6 @@ class _ReportListPage extends State<ReportListPage> {
     }).toList();
 
     return Scaffold(
-      //AppBar: EncuentraMe! - User
       //AppBar: EncuentraMe! - User
       appBar: const AppbarEncuentraMe(title: 'EncuentraMe!'),
 
@@ -244,9 +253,9 @@ class _ReportListPage extends State<ReportListPage> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: reportmp.image1 != null
+                            child: reportmp.image1Url != null
                                 ? Image.network(
-                                    reportmp.image1!,
+                                    reportmp.image1Url!,
                                     width: 60,
                                     height: 60,
                                     fit: BoxFit.cover,
@@ -321,9 +330,6 @@ class _ReportListPage extends State<ReportListPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: CustomBottomBar.buildCameraFab(
         onPressed: () {
-          // Aquí va a la camara para iniciar el proceso de reconocimiento facial
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CameraView()));
           // Aquí va a la camara para iniciar el proceso de reconocimiento facial
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CameraView()));

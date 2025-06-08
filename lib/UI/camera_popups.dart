@@ -1,25 +1,23 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:encuentrame_app/UI/reports_list.dart';
 import 'package:encuentrame_app/UI/person_founded.dart';
 import 'package:encuentrame_app/services/rekognition_http_service.dart';
-import 'package:encuentrame_app/services/s3_upload_service.dart';
+import 'package:image/image.dart' as img;
+import 'dart:convert';
 
 class CameraPopupProcess {
   final BuildContext context;
   final List<String> imagePaths;
-  final String? comment;
 
   CameraPopupProcess({
     required this.context,
     required this.imagePaths,
-    this.comment,
   });
 
   void startProcess() => _showPopup1();
 
-  // Popup 1: nota adicional
   void _showPopup1() async {
     final controller = TextEditingController();
     final note = await showDialog<String?>(
@@ -35,16 +33,14 @@ class CameraPopupProcess {
               top: 8,
               child: GestureDetector(
                 onTap: () => Navigator.of(ctx).pop(null),
-                child: const Icon(Icons.close, size: 24),
+                child: const Icon(Icons.close),
               ),
             ),
-            Center(
+            const Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: const Text(
-                  'NOTA ADICIONAL',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Text('NOTA ADICIONAL',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
             Positioned(
@@ -52,7 +48,7 @@ class CameraPopupProcess {
               top: 8,
               child: GestureDetector(
                 onTap: () => Navigator.of(ctx).pop(controller.text.trim()),
-                child: const Icon(Icons.arrow_forward, size: 24),
+                child: const Icon(Icons.arrow_forward),
               ),
             ),
           ],
@@ -73,8 +69,7 @@ class CameraPopupProcess {
                 decoration: InputDecoration(
                   hintText: 'Escribe aquí tu nota...',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                      borderRadius: BorderRadius.circular(8)),
                 ),
               ),
             ],
@@ -83,180 +78,100 @@ class CameraPopupProcess {
       ),
     );
 
-    if (note != null) {
-      _showPopup2(note);
-    }
+    if (note != null) _showPopup2(note);
   }
 
-  // Popup 2: procesando + subida + llamada a Rekognition
-  void _showPopup2(String note) {
+  void _showPopup2(String note) async {
+    print('[Popup2] Iniciando popup de procesamiento...');
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Center(
-          child:
-              Text('PROCESANDO', style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
+      builder: (_) => const AlertDialog(
+        title: Center(child: Text('PROCESANDO')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            SizedBox(height: 8),
+          children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text(
-              'Estamos subiendo tu imagen...',
-              textAlign: TextAlign.center,
-            ),
+            Text('Estamos comparando la imagen...'),
           ],
         ),
       ),
     );
 
-    /*uploadImageToS3(imagePaths.first).then((key) {
-      identifyFaces(key).then((matches) {
-        Navigator.of(context).pop(); // Cierra el diálogo de carga
-        _showPopup3(note, matches);
-      }).catchError((error) {
-        Navigator.of(context).pop();
-        _showErrorDialog('Error en Rekognition: $error');
-      });
-    }).catchError((error) {
+    final originalPath = imagePaths.first;
+    final originalFile = File(originalPath);
+    print('[Popup2] Ruta de imagen original: $originalPath');
+    File imageToSend;
+
+    try {
+      imageToSend = await convertToJpegIfNeeded(originalFile);
+      print('[Popup2] Imagen lista para enviar (path): ${imageToSend.path}');
+    } catch (e) {
       Navigator.of(context).pop();
-      _showErrorDialog('Error subiendo a S3: $error');
-    });*/
-    // Simulamos la demora y luego creamos un resultado ficticio
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop(); // Cierra el diálogo de carga
+      final msg = 'Error al procesar la imagen: $e';
+      print('[Popup2] ❌ $msg');
+      _showError(msg);
+      return;
+    }
 
-      final simulatedMatch = RekognitionMatch(
-        faceId: 'demo-face-id',
-        externalImageId:
-            'demo.jpg', // debe existir en tu bucket si quieres que se vea
-        confidence: 50,
+    try {
+      print('[Popup2] Enviando imagen a Rekognition...');
+      final matches = await RekognitionHttpService().searchFace(
+        imageFile: imageToSend,
+        collectionId: 'personas-desaparecidas',
       );
+      print(
+          '[Popup2] Respuesta de Rekognition recibida. Nº coincidencias: ${matches.length}');
+      Navigator.of(context).pop();
 
-      final person = PersonData(
-        name: 'Josue Cartagena',
-        age: 34,
-        disappearanceDate: '12/03/2024',
-        placeLastSeen: 'Callao, Lima',
-        imageUrl:
-            'https://encuentreme-bucket-rekognition/demo.jpg', // imagen visible públicamente
-      );
-
-      Navigator.of(context).push(
-        MaterialPageRoute(
+      if (matches.isNotEmpty) {
+        final top = matches.first;
+        print(
+            '[Popup2] Coincidencia principal -> externalId: ${top.externalId}, similarity: ${top.similarity}');
+        Navigator.of(context).push(MaterialPageRoute(
           builder: (_) => PersonFoundedPage(
-            topMatch: simulatedMatch,
-            similarity: simulatedMatch.confidence / 100,
-            person: person,
+            topMatch: top,
             additionalNote: note,
           ),
-        ),
-      );
-    });
+        ));
+      } else {
+        print('[Popup2] ❗ No se encontraron coincidencias');
+        _showPopup3();
+      }
+    } catch (e) {
+      Navigator.of(context).pop();
+      String errorMessage = e.toString();
+      print('[Popup2] ❌ Error detectado bruto: $errorMessage');
+
+      // Intenta obtener el mensaje del backend si viene como JSON
+      try {
+        final err = e.toString();
+        if (err.contains('{') && err.contains('message')) {
+          final decoded = jsonDecode(err.replaceFirst('Exception: ', ''));
+          errorMessage = decoded['message'] ?? err;
+        }
+      } catch (_) {
+        // Ignora y deja el mensaje por defecto
+      }
+
+      if (errorMessage.contains('No se detectó')) {
+        _showError(
+          'No se detectó ningún rostro en la imagen. Asegúrate de que tu rostro esté visible y bien iluminado.',
+        );
+      } else if (errorMessage.contains('403')) {
+        _showError(
+          'Error de permisos al conectarse con el sistema de reconocimiento. Intenta nuevamente o contacta soporte.',
+        );
+      } else {
+        _showError(
+          'Ocurrió un error durante la comparación. Intenta con otra imagen o verifica tu conexión.',
+        );
+      }
+    }
   }
 
-  void _showPopup3(String note, List<RekognitionMatch> matches) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        titlePadding: EdgeInsets.zero,
-        title: Stack(
-          children: [
-            Positioned(
-              left: 8,
-              top: 8,
-              child: GestureDetector(
-                onTap: () => Navigator.of(ctx).pop(),
-                child: const Icon(Icons.close, size: 24),
-              ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: const Text('RESULTADO',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Se encontraron ${matches.length} coincidencia(s).',
-                textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            // Botón Ciudadano
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  _showPopup4(note);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text('Ciudadano'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Botón Policía
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  if (matches.isNotEmpty) {
-                    final top = matches.first;
-                    final person = PersonData(
-                      name: 'Nombre obtenido de tu DB',
-                      age: 30,
-                      disappearanceDate: '01/01/2024',
-                      placeLastSeen: 'Ciudad X',
-                      imageUrl:
-                          'https://encuentreme-bucket-rekognition/${top.externalImageId}.jpg',
-                    );
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => PersonFoundedPage(
-                          topMatch: top,
-                          similarity: top.confidence / 100,
-                          person: person,
-                          additionalNote: note,
-                        ),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('No se encontró ninguna coincidencia')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text('Policía / Renipéd'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showPopup4(String note) {
+  void _showPopup3() {
     showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -275,13 +190,13 @@ class CameraPopupProcess {
                     MaterialPageRoute(builder: (_) => const ReportListPage()),
                   );
                 },
-                child: const Icon(Icons.close, size: 24),
+                child: const Icon(Icons.close),
               ),
             ),
-            Center(
+            const Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: const Text('GRACIAS !!',
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Text('GRACIAS !!',
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
@@ -290,35 +205,22 @@ class CameraPopupProcess {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 8),
             const Text(
-              'Tu aporte será de gran ayuda.\nSe te notificará el progreso del caso.',
-              textAlign: TextAlign.center,
-            ),
+                'Tu aporte será de gran ayuda.\nSe te notificará el progreso del caso.',
+                textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.call),
-                label: const Text('Policía - Línea 114'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E7D32),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                onPressed: () async {
-                  final uri = Uri(scheme: 'tel', path: '114');
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
-                  }
-                  Navigator.of(ctx).pop();
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const ReportListPage()),
-                  );
-                },
-              ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.call),
+              label: const Text('Policía - Línea 114'),
+              onPressed: () async {
+                final uri = Uri(scheme: 'tel', path: '114');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                }
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const ReportListPage()));
+              },
             ),
           ],
         ),
@@ -326,7 +228,7 @@ class CameraPopupProcess {
     );
   }
 
-  void _showErrorDialog(String message) {
+  void _showError(String message) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -334,11 +236,33 @@ class CameraPopupProcess {
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'))
         ],
       ),
     );
   }
+}
+
+Future<File> convertToJpegIfNeeded(File file) async {
+  final extension = file.path.toLowerCase().split('.').last;
+  print('[Convert] Formato de imagen detectado: .$extension');
+
+  if (extension == 'jpg' || extension == 'jpeg') {
+    print('[Convert] Imagen ya está en formato JPG, no se convierte.');
+    return file;
+  }
+
+  final bytes = await file.readAsBytes();
+  final decoded = img.decodeImage(bytes);
+  if (decoded == null) {
+    print('[Convert] ❌ No se pudo decodificar la imagen.');
+    throw Exception('No se pudo decodificar la imagen $extension');
+  }
+
+  final newPath = file.path.replaceAll(RegExp(r'\\.(heic|webp|png)\$'), '.jpg');
+  final newFile = File(newPath);
+  await newFile.writeAsBytes(img.encodeJpg(decoded, quality: 90));
+  print('[Convert] Imagen convertida a JPG: ${newFile.path}');
+  return newFile;
 }

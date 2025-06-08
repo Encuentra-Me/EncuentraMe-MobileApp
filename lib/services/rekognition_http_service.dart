@@ -1,46 +1,96 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
-/// Modelo para contener un match de Rekognition
 class RekognitionMatch {
-  final String faceId;
-  final String externalImageId;
-  final double confidence;
+  final String externalId;
+  final double similarity;
 
   RekognitionMatch({
-    required this.faceId,
-    required this.externalImageId,
-    required this.confidence,
+    required this.externalId,
+    required this.similarity,
   });
-}
 
-/// Llama a tu endpoint REST y parsea la respuesta
-Future<List<RekognitionMatch>> identifyFaces(String key) async {
-  final url = Uri.parse(
-    'https://mltd978p26.execute-api.us-east-2.amazonaws.com/dev/match',
-  );
-  final resp = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'bucket': 'encuentreme-bucket-rekognition',
-      'key': key, // p.ej. 'faces/12345.jpg'
-      'collectionId': 'MiColeccionDesaparecidos',
-    }),
-  );
-
-  if (resp.statusCode != 200) {
-    throw Exception(
-      'Error en servidor (${resp.statusCode}): ${resp.body}',
+  factory RekognitionMatch.fromJson(Map<String, dynamic> json) {
+    return RekognitionMatch(
+      externalId: json['externalId'],
+      similarity: json['similarity'].toDouble(),
     );
   }
+}
 
-  final data = jsonDecode(resp.body) as Map<String, dynamic>;
-  return (data['matches'] as List<dynamic>).map((m) {
-    return RekognitionMatch(
-      faceId: m['faceId'] as String,
-      externalImageId: m['externalImageId'] as String,
-      confidence: (m['similarity'] as num).toDouble(),
-    );
-  }).toList();
+class RekognitionHttpService {
+  final String baseUrl = 'http://192.168.18.12:8080/api/v1/rekognition';
+
+  /// Buscar coincidencias faciales en una colección
+  Future<List<RekognitionMatch>> searchFace({
+    required File imageFile,
+    required String collectionId,
+  }) async {
+    final uri = Uri.parse('$baseUrl/search-face/$collectionId');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.files.add(await http.MultipartFile.fromPath(
+      'image',
+      imageFile.path,
+      contentType: _getMediaTypeFromExtension(imageFile.path),
+    ));
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode != 200) {
+      try {
+        final errorJson = jsonDecode(response.body);
+        final message =
+            errorJson['message'] ?? 'Error al buscar coincidencias.';
+        throw Exception(message);
+      } catch (_) {
+        throw Exception(
+            'Error al buscar coincidencias: ${response.statusCode}');
+      }
+    }
+
+    final List<dynamic> data = jsonDecode(response.body);
+    return data.map((json) => RekognitionMatch.fromJson(json)).toList();
+  }
+
+  /// Registrar un rostro en la colección (indexar)
+  Future<void> indexFace({
+    required File imageFile,
+    required String collectionId,
+    required String externalId,
+  }) async {
+    final uri =
+        Uri.parse('$baseUrl/index-face/$collectionId?externalId=$externalId');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.files.add(await http.MultipartFile.fromPath(
+      'image',
+      imageFile.path,
+      contentType: MediaType('image', 'jpeg'),
+    ));
+
+    final response = await request.send();
+
+    if (response.statusCode != 200) {
+      final body = await http.Response.fromStream(response);
+      throw Exception('Error al indexar rostro: ${body.body}');
+    }
+  }
+
+  /// Determinar el tipo MIME según la extensión del archivo
+  MediaType _getMediaTypeFromExtension(String path) {
+    final extension = path.toLowerCase().split('.').last;
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'png':
+        return MediaType('image', 'png');
+      default:
+        return MediaType('application', 'octet-stream'); // por defecto
+    }
+  }
 }

@@ -62,8 +62,8 @@ class ReportDetailPage extends StatelessWidget {
                     CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.grey.shade200,
-                      backgroundImage: reportMP.image1 != null
-                          ? NetworkImage(reportMP.image1!)
+                      backgroundImage: reportMP.image1Url != null
+                          ? NetworkImage(reportMP.image1Url!)
                           : const AssetImage('assets/profile_placeholder.png')
                               as ImageProvider,
                       onBackgroundImageError: (_, __) {},
@@ -181,8 +181,8 @@ class ReportDetailPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10)),
               child: SizedBox(
                 height: 200,
-                child: reportMP.image1 != null
-                    ? Image.network(reportMP.image1!, fit: BoxFit.cover)
+                child: reportMP.image1Url != null
+                    ? Image.network(reportMP.image1Url!, fit: BoxFit.cover)
                     : Center(child: Text("Sin imagen disponible")),
               ),
             ),

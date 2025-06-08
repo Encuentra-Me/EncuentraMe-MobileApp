@@ -57,9 +57,24 @@ class _CameraViewState extends State<CameraView> {
   Future<void> _pickFromGallery() async {
     final List<XFile>? files = await _picker.pickMultiImage();
     if (files != null && files.isNotEmpty) {
-      setState(() {
-        _imagePaths.addAll(files.map((f) => f.path));
-      });
+      final validFiles = <XFile>[];
+      for (var file in files) {
+        final ext = file.path.toLowerCase().split('.').last;
+        if (ext == 'heic') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Se omitió una imagen .heic (no compatible).'),
+            ),
+          );
+          continue;
+        }
+        validFiles.add(file);
+      }
+      if (validFiles.isNotEmpty) {
+        setState(() {
+          _imagePaths.addAll(validFiles.map((f) => f.path));
+        });
+      }
     }
   }
 
