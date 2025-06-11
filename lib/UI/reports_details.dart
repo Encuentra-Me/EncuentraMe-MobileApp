@@ -1,5 +1,4 @@
 import 'package:encuentrame_app/models/report.dart';
-import 'package:encuentrame_app/UI/popups.dart';
 import 'package:flutter/material.dart';
 import 'package:encuentrame_app/utils/app_bar.dart';
 
@@ -218,7 +217,7 @@ class ReportDetailPage extends StatelessWidget {
                   height: 80,
                 ), // Espacio para el botón de la cámara
 
-                Column(
+                /*Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
@@ -231,7 +230,8 @@ class ReportDetailPage extends StatelessWidget {
                     ),
                     //Text("Agregar Reporte"),
                   ],
-                ),
+                ),*/
+
               ],
             ),
           )),
