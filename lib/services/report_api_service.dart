@@ -4,7 +4,8 @@ import '../models/report.dart';
 
 class ReportApiService {
   // Asegúrate de que esta IP y puerto coincidan con tu backend Spring Boot en AWS
-  final String baseUrl = 'http://192.168.18.11:8080/api/v1/reports';
+  //final String baseUrl = 'http://192.168.18.11:8080/api/v1/reports';
+  final String baseUrl = 'http://3.22.66.120:8080/api/v1/reports';
 
   Future<List<ReportMP>> getAllReports() async {
     final response = await http.get(Uri.parse(baseUrl));

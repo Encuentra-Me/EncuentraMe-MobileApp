@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://192.168.18.11:8080'; // Replace with your actual API base URL
+  //static const String baseUrl = 'http://192.168.18.11:8080'; // Replace with your actual API base URL
+  static const String baseUrl = 'http://3.22.66.120:8080';
   static const String _tokenKey = 'auth_token';
 
   // Store token after successful login
@@ -38,7 +39,7 @@ class AuthService {
       );
 
       //print("response.statusCode ${response.statusCode}");
-      
+
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         // Store the token
@@ -179,4 +180,4 @@ class AuthService {
       throw Exception('Error fetching roles: $e');
     }
   }
-} 
+}

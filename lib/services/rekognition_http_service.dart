@@ -21,7 +21,8 @@ class RekognitionMatch {
 }
 
 class RekognitionHttpService {
-  final String baseUrl = 'http://192.168.18.12:8080/api/v1/rekognition';
+  //final String baseUrl = 'http://192.168.18.12:8080/api/v1/rekognition';
+  final String baseUrl = 'http://3.22.66.120:8080/api/v1/rekognition';
 
   /// Buscar coincidencias faciales en una colección
   Future<List<RekognitionMatch>> searchFace({

@@ -34,7 +34,8 @@ class _PersonFoundedPageState extends State<PersonFoundedPage> {
   Future<void> fetchReport() async {
     try {
       final response = await http.get(Uri.parse(
-        'http://192.168.18.12:8080/api/v1/reports/${widget.topMatch.externalId}',
+        //'http://192.168.18.12:8080/api/v1/reports/${widget.topMatch.externalId}',
+        'http://3.22.66.120:8080/api/v1/reports/${widget.topMatch.externalId}',
       ));
 
       if (response.statusCode == 200) {
