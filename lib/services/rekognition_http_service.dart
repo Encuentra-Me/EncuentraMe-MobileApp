@@ -22,6 +22,7 @@ class RekognitionMatch {
 }
 
 class RekognitionHttpService {
+  //final String baseUrl = 'http://192.168.18.12:8080/api/v1/rekognition';
   final String baseUrl = '${AppConfig.baseUrl}/v1/rekognition';
 
   /// Buscar coincidencias faciales en una colección

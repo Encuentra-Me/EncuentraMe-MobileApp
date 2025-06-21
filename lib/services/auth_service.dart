@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 
 class AuthService {
+  //static const String baseUrl = 'http://192.168.18.11:8080'; // Replace with your actual API base URL
+  static const String baseUrl = AppConfig.baseUrl;
   static const String _tokenKey = 'auth_token';
 
   // Store token after successful login
@@ -27,7 +29,7 @@ class AuthService {
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('${AppConfig.baseUrl}/auth/login'),
+        Uri.parse('${baseUrl}/auth/login'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -38,7 +40,7 @@ class AuthService {
       );
 
       //print("response.statusCode ${response.statusCode}");
-      
+
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         // Store the token
@@ -64,7 +66,7 @@ class AuthService {
   Future<bool> isEmailUnique(String email) async {
     try {
       final response = await http.get(
-        Uri.parse('${AppConfig.baseUrl}/auth/check-email?email=$email'),
+        Uri.parse('$baseUrl/auth/check-email?email=$email'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -97,7 +99,7 @@ class AuthService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('${AppConfig.baseUrl}/auth/register'),
+        Uri.parse('$baseUrl/auth/register'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -140,7 +142,7 @@ class AuthService {
       }
 
       final response = await http.post(
-        Uri.parse('${AppConfig.baseUrl}/auth/logout'),
+        Uri.parse('$baseUrl/auth/logout'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -163,7 +165,7 @@ class AuthService {
   Future<List<Map<String, dynamic>>> getRoles() async {
     try {
       final response = await http.get(
-        Uri.parse('${AppConfig.baseUrl}/roles'),
+        Uri.parse('$baseUrl/roles'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -179,4 +181,4 @@ class AuthService {
       throw Exception('Error fetching roles: $e');
     }
   }
-} 
+}
