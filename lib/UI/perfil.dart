@@ -25,11 +25,11 @@ class _PerfilPage extends State<PerfilPage> {
                     const SizedBox(height: 20),
                     // Profile Picture
                     CircleAvatar(
-                      radius: 50,
+                      radius: 75,
                       backgroundColor: Colors.grey.shade200,
                       child: const Icon(
                         Icons.person,
-                        size: 50,
+                        size: 75,
                         color: Colors.grey,
                       ),
                     ),

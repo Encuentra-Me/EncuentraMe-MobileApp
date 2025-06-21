@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://192.168.18.11:8080'; // Replace with your actual API base URL
   static const String _tokenKey = 'auth_token';
 
   // Store token after successful login
@@ -27,7 +27,7 @@ class AuthService {
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/login'),
+        Uri.parse('${AppConfig.baseUrl}/auth/login'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -64,7 +64,7 @@ class AuthService {
   Future<bool> isEmailUnique(String email) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/auth/check-email?email=$email'),
+        Uri.parse('${AppConfig.baseUrl}/auth/check-email?email=$email'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -97,7 +97,7 @@ class AuthService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/register'),
+        Uri.parse('${AppConfig.baseUrl}/auth/register'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -140,7 +140,7 @@ class AuthService {
       }
 
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/logout'),
+        Uri.parse('${AppConfig.baseUrl}/auth/logout'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -163,7 +163,7 @@ class AuthService {
   Future<List<Map<String, dynamic>>> getRoles() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/roles'),
+        Uri.parse('${AppConfig.baseUrl}/roles'),
         headers: {
           'Content-Type': 'application/json',
         },

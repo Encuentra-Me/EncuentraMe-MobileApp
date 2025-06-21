@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:encuentrame_app/UI/notification.dart';
+import 'package:encuentrame_app/UI/perfil.dart';
 
 class AppbarEncuentraMe extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -93,8 +94,7 @@ class AppbarEncuentraMe extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.person),
           onPressed: () {
-            // aqui va al perfil
-            //Navigator.push(context, MaterialPageRoute(builder: (context) => PerfilPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => PerfilPage()));
           },
         ),
       ],

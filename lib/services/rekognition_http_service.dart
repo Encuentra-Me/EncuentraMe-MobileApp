@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import '../config.dart';
 
 class RekognitionMatch {
   final String externalId;
@@ -21,7 +22,7 @@ class RekognitionMatch {
 }
 
 class RekognitionHttpService {
-  final String baseUrl = 'http://192.168.18.12:8080/api/v1/rekognition';
+  final String baseUrl = '${AppConfig.baseUrl}/v1/rekognition';
 
   /// Buscar coincidencias faciales en una colección
   Future<List<RekognitionMatch>> searchFace({

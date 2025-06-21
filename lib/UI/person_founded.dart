@@ -5,6 +5,7 @@ import 'package:encuentrame_app/utils/app_bar.dart';
 import 'package:encuentrame_app/utils/bottom_bar.dart';
 import 'package:encuentrame_app/UI/camera_view.dart';
 import 'package:encuentrame_app/services/rekognition_http_service.dart';
+import '../config.dart';
 
 class PersonFoundedPage extends StatefulWidget {
   final RekognitionMatch topMatch;
@@ -34,7 +35,7 @@ class _PersonFoundedPageState extends State<PersonFoundedPage> {
   Future<void> fetchReport() async {
     try {
       final response = await http.get(Uri.parse(
-        'http://192.168.18.12:8080/api/v1/reports/${widget.topMatch.externalId}',
+        '${AppConfig.baseUrl}/v1/reports/${widget.topMatch.externalId}',
       ));
 
       if (response.statusCode == 200) {
