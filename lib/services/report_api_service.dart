@@ -4,7 +4,6 @@ import '../models/report.dart';
 import '../config.dart';
 
 class ReportApiService {
-  
   //final String baseUrl = 'http://192.168.18.11:8080/api/v1/reports';
   final String baseUrl = '${AppConfig.baseUrl}/v1/reports';
 
@@ -59,6 +58,30 @@ class ReportApiService {
 
     if (response.statusCode != 200) {
       throw Exception('Error al actualizar el reporte: ${response.body}');
+    }
+  }
+
+  Future<void> updateReconocimiento(int id, double reconocimiento) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/$id/reconocimiento?reconocimiento=$reconocimiento'),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Error al actualizar reconocimiento: ${response.statusCode} - ${response.body}');
+    }
+  }
+
+  Future<List<ReportMP>> getReportsByStatus(String status) async {
+    final response =
+        await http.get(Uri.parse('$baseUrl/status?status=$status'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((e) => ReportMP.fromJson(e)).toList();
+    } else {
+      throw Exception(
+          'Error al obtener reportes por estado: ${response.statusCode}');
     }
   }
 }

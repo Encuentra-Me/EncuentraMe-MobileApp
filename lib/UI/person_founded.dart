@@ -5,6 +5,7 @@ import 'package:encuentrame_app/utils/app_bar.dart';
 import 'package:encuentrame_app/utils/bottom_bar.dart';
 import 'package:encuentrame_app/UI/camera_view.dart';
 import 'package:encuentrame_app/services/rekognition_http_service.dart';
+import 'package:encuentrame_app/services/report_api_service.dart';
 import '../config.dart';
 
 class PersonFoundedPage extends StatefulWidget {
@@ -25,11 +26,26 @@ class _PersonFoundedPageState extends State<PersonFoundedPage> {
   Map<String, dynamic>? report;
   bool isLoading = true;
   bool hasError = false;
+  final reportApiService = ReportApiService();
 
   @override
   void initState() {
     super.initState();
-    fetchReport();
+    //fetchReport();
+    updateAndFetch();
+  }
+
+  Future<void> updateAndFetch() async {
+    try {
+      await reportApiService.updateReconocimiento(
+        int.parse(widget.topMatch.externalId),
+        widget.topMatch.similarity,
+      );
+    } catch (e) {
+      print('Error al actualizar reconocimiento: $e');
+    }
+
+    await fetchReport(); // ya lo tienes definido
   }
 
   Future<void> fetchReport() async {
