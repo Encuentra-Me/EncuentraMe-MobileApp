@@ -28,80 +28,6 @@ class _ReportListPage extends State<ReportListPage> {
   String _searchQuery = '';
   bool isSaved = false;
 
-  // ── AUXILIAR: carga desde JSON
-  /*Future<List<ReportMP>> _loadReportsFromJson(String filename) async {
-      final jsonStr = await rootBundle.loadString('assets/$filename.json');
-      final List<dynamic> jsonList = json.decode(jsonStr);
-      return jsonList
-          .map((item) => ReportMP.fromJson(item as Map<String, dynamic>))
-          .toList();
-    }
-
-    // ── AUXILIAR: llena BD si está vacía
-    Future<void> _seedDatabase() async {
-      final existing = await _dbHelper.getReports();
-      if (existing.isEmpty) {
-        //final jsonList = await _loadReportsFromJson('menores');
-
-        // 1) Sembrar menores.json
-        final minors = await _loadReportsFromJson('menores');
-        for (var r in minors) {
-          await _dbHelper.addReport(
-            name: r.name,
-            lastName: r.lastName,
-            status: r.status,
-            age: r.age.toString(),
-            bornCountry: r.bornCountry,
-            lastSeen: r.lastSeen,
-            placeLastSeen: r.placeLastSeen,
-            tez: r.tez,
-            sangre: r.sangre,
-            contextura: r.contextura,
-            estatura: r.estatura,
-            cabello: r.cabello,
-            boca: r.boca,
-            ojos: r.ojos,
-            nariz: r.nariz,
-            alertNoteUrl: r.alertNoteUrl,
-            image1: r.image1,
-          );
-        }
-        // 2) Sembrar adultos.json
-        final adults = await _loadReportsFromJson('adultos');
-        for (var r in adults) {
-          await _dbHelper.addReport(
-            name: r.name,
-            lastName: r.lastName,
-            status: r.status,
-            age: r.age.toString(),
-            bornCountry: r.bornCountry,
-            lastSeen: r.lastSeen,
-            placeLastSeen: r.placeLastSeen,
-            tez: r.tez,
-            sangre: r.sangre,
-            contextura: r.contextura,
-            estatura: r.estatura,
-            cabello: r.cabello,
-            boca: r.boca,
-            ojos: r.ojos,
-            nariz: r.nariz,
-            alertNoteUrl: r.alertNoteUrl,
-            image1: r.image1,
-          );
-        }
-      }
-    }
-
-    // Método para cargar los elementos desde la base de datos
-    Future<void> _loadReportsFromDb() async {
-      final reports = await _dbHelper.getReports();
-      setState(() {
-        _reportsMP = reports.map((e) => ReportMP.fromMap(e)).toList();
-      });
-
-      print("Número de elementos <b>: ${_reportsMP.length}");
-    }*/
-
   @override
   void initState() {
     super.initState();
@@ -110,7 +36,7 @@ class _ReportListPage extends State<ReportListPage> {
     //_seedDatabase().then((_) => _loadReportsFromDb());
     _fetchReports();
   }
-
+  
   Future<void> _fetchReports() async {
     try {
       final reports = await _apiService.getAllReports();
@@ -145,6 +71,7 @@ class _ReportListPage extends State<ReportListPage> {
       return inGroup && matchesSearch;
     }).toList();
 
+
     return Scaffold(
       //AppBar: EncuentraMe! - User
       appBar: const AppbarEncuentraMe(title: 'EncuentraMe!'),
@@ -161,8 +88,8 @@ class _ReportListPage extends State<ReportListPage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _selectedGroup == 'menores'
-                          ? Colors.grey.shade300
-                          : const Color(0xFF2E7D32),
+                          ? const Color(0xFF2E7D32)
+                          : Colors.grey.shade300,
                     ),
                     onPressed: () {
                       setState(() => _selectedGroup = 'menores');
@@ -171,8 +98,8 @@ class _ReportListPage extends State<ReportListPage> {
                       '0–17 años',
                       style: TextStyle(
                         color: _selectedGroup == 'menores'
-                            ? Colors.black
-                            : Colors.white,
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                   ),
@@ -322,8 +249,6 @@ class _ReportListPage extends State<ReportListPage> {
           ),
         ],
       ),
-
-      // Bottom:
 
       // Bottom:
       bottomNavigationBar: const CustomBottomBar(),

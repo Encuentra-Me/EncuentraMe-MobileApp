@@ -1,5 +1,12 @@
+import 'package:encuentrame_app/UI/camera_view.dart';
+import 'package:encuentrame_app/models/user.dart';
+import 'package:encuentrame_app/services/auth_service.dart';
+import 'package:encuentrame_app/services/user_service.dart';
+import 'package:encuentrame_app/utils/app_bar.dart';
+import 'package:encuentrame_app/utils/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:encuentrame_app/components/app_header.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
@@ -9,10 +16,46 @@ class PerfilPage extends StatefulWidget {
 }
 
 class _PerfilPage extends State<PerfilPage> {
+
+  final AuthService _authService = AuthService();
+  final UserService _userService = UserService(); 
+  User? _user;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    
+    final userId = await _authService.getUserId();
+
+    if (userId != null) {
+      try {
+        print("_userId: $userId");
+        final user = await _userService.getUserById(userId);
+        print("user: ${user.email}");
+        setState(() {
+          _user = user;
+          _isLoading = false;
+        });
+      } catch (e) {
+        // handle error, e.g. show snackbar
+        print('Error loading user: $e');
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppHeader(currentPage: 'profile'),
+      appBar: const AppbarEncuentraMe(title: 'EncuentraMe!', isProfilePage: true),
       body: Column(
         children: [
           Expanded(
@@ -29,106 +72,71 @@ class _PerfilPage extends State<PerfilPage> {
                       backgroundColor: Colors.grey.shade200,
                       child: const Icon(
                         Icons.person,
-                        size: 75,
+                        size: 150,
                         color: Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 20),
                     // Profile Information
-                    Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            _buildProfileField('Nombre', 'Usuario'),
-                            _buildProfileField('Email', 'usuario@ejemplo.com'),
-                            _buildProfileField('Teléfono', '+51 999 999 999'),
-                            _buildProfileField('Ubicación', 'Lima, Perú'),
-                          ],
+                    if (_isLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    else if (_user != null)
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              _buildProfileField('Email', _user!.email),
+                              _buildProfileField('Rol', _user!.roleName),
+                              _buildProfileField('Nombres', _user!.firstName),
+                              _buildProfileField('Apellido Paterno', _user!.paternalLastName),
+                              _buildProfileField('Apellido Materno', _user!.maternalLastName),
+                              _buildProfileField(_user!.documentType, _user!.documentNumber),
+                              _buildProfileField('Fecha de Nacimiento', _user!.birthDate),
+                              _buildProfileField('Celular', '${_user!.countryCode} ${_user!.phone}'),
+                              _buildProfileField('Ubigeo', _user!.ubigeo),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            'Error al cargar el perfil del usuario',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
             ),
           ),
-          // Bottom Navigation Row
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildActionButton(
-                  'Mis Reportes',
-                  Icons.description,
-                  () {
-                    // TODO: Navigate to My Reports
-                  },
-                ),
-                _buildActionButton(
-                  'Reportes Guardados',
-                  Icons.bookmark,
-                  () {
-                    // TODO: Navigate to Saved Reports
-                  },
-                ),
-                _buildActionButton(
-                  'Mis Aportes',
-                  Icons.volunteer_activism,
-                  () {
-                    // TODO: Navigate to My Contributions
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.red),
-                  onPressed: () {
-                    // TODO: Implement logout functionality
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Cerrar Sesión'),
-                          content: const Text('¿Estás seguro que deseas cerrar sesión?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Cancelar'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement actual logout logic
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
         ],
+      ),
+      bottomNavigationBar: CustomBottomBar(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: CustomBottomBar.buildCameraFab(
+        onPressed: () {
+          // Aquí va a la camara para iniciar el proceso de reconocimiento facial
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CameraView()));
+        },
       ),
     );
   }

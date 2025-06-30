@@ -1,4 +1,5 @@
 import 'package:encuentrame_app/UI/reports_list.dart';
+import 'package:encuentrame_app/utils/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'notification_detail.dart';
 
@@ -58,47 +59,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.lightGreen,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ReportListPage()));
-              },
-            ),
-            const Text("Notificaciones", style: TextStyle(color: Colors.white)),
-            IconButton(
-              icon: const Icon(Icons.person),
-              onPressed: () {
-                // aqui va al perfil
-              },
-            ),
-          ],
-        ),
-        /*bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Buscar",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ),
-        ),*/
-      ),
+      
+      appBar: const AppbarEncuentraMe(title: 'EncuentraMe!'),
+
       body: ListView(
         children: [
           Padding(

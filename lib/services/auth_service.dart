@@ -7,32 +7,38 @@ class AuthService {
   //static const String baseUrl = 'http://192.168.18.11:8080'; // Replace with your actual API base URL
   static const String baseUrl = AppConfig.baseUrl;
   static const String _tokenKey = 'auth_token';
+  static const String _userIdKey = 'user_id';
 
-  // Store token after successful login
   Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
   }
-
-  // Get stored token
-  Future<String?> _getToken() async {
+  Future<void> _saveUserId(int userId) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
+    await prefs.setInt(_userIdKey, userId);
   }
 
-  // Clear token on logout
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("tokencito: ${prefs.getString(_tokenKey)}");
+    return prefs.getString(_tokenKey);
+  }
+  Future<int?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("userId: ${prefs.getInt(_userIdKey)}");
+    return prefs.getInt(_userIdKey);
+  }
+
   Future<void> _clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
   }
 
   Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
+ 
       final response = await http.post(
-        Uri.parse('${baseUrl}/auth/login'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json',},
         body: jsonEncode({
           'email': email,
           'password': password,
@@ -43,24 +49,24 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        // Store the token
+
         if (responseData['token'] != null) {
           await _saveToken(responseData['token']);
         }
+        if(responseData['userId'] != null) {
+          await _saveUserId(responseData['userId']);
+        }
+
         return responseData;
+
       } else if (response.statusCode == 401) {
-        final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Invalid credentials');
+        //final errorData = jsonDecode(response.body);
+        throw Exception('Credenciales inválidas');//errorData['message'] ?? 'Invalid credentials');
       } else {
-        final errorData = jsonDecode(response.body);
-        throw Exception(errorData['message'] ?? 'Internal Server Error');
+        //final errorData = jsonDecode(response.body);
+        throw Exception('Error interno de la aplicación');//errorData['message'] ?? 'Internal Server Error');
       }
-    } catch (e) {
-      if (e is Exception && e.toString().contains('Invalid credentials')) {
-        throw Exception('Credenciales inválidas');
-      }
-      throw Exception('Error interno de la aplicación');
-    }
+
   }
 
   Future<bool> isEmailUnique(String email) async {
@@ -79,7 +85,7 @@ class AuthService {
         throw Exception('Failed to check email: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error checking email: $e');
+      throw Exception('Error verificando email: $e');
     }
   }
 
@@ -130,13 +136,13 @@ class AuthService {
         throw Exception('Failed to register: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error connecting to server: $e');
+      throw Exception('Error registrando usuario: $e');
     }
   }
 
   Future<void> logout() async {
     try {
-      final token = await _getToken();
+      final token = await getToken();
       if (token == null) {
         throw Exception('No authentication token found');
       }
@@ -158,7 +164,7 @@ class AuthService {
     } catch (e) {
       // Clear the token even if the logout request fails
       await _clearToken();
-      throw Exception('Error during logout: $e');
+      throw Exception('Error cerrando sesión: $e');
     }
   }
 
@@ -178,7 +184,7 @@ class AuthService {
         throw Exception('Failed to fetch roles: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching roles: $e');
+      throw Exception('Error obteniendo roles: $e');
     }
   }
 }
